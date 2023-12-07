@@ -51,7 +51,7 @@ try {
     if ($downloadURLresponse) {
         # Convert JSON data to PowerShell object
         $dataObjectURL = $downloadURLresponse | ConvertTo-Json
-        Write-Host "JsonObject: $downloadURLresponse"
+        Write-Host "JsonObject: $dataObjectURL"
 
         # Extract the "id" value
         $downloadURL = $dataObjectURL.download_url
