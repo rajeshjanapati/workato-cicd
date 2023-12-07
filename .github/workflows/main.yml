@@ -1,4 +1,4 @@
-name: Apigee Artifacts Export
+name: Workato-CICD
 on: push
   # workflow_dispatch:
 
