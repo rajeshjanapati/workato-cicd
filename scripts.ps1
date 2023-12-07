@@ -41,17 +41,13 @@ try {
             $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
         
             if ($downloadURLresponse) {
-                # Convert JSON data to PowerShell object
-                $dataObjectURL = $downloadURLresponse | ConvertTo-Json
-                Write-Host "JsonObject: $dataObjectURL"
-        
-                # Extract the "download_url" value
-                $downloadURL = $dataObjectURL.download_url
+                # Access the "download_url" property directly
+                $downloadURL = $downloadURLresponse.download_url
         
                 Write-Host "downloadURL: $downloadURL"
         
                 # Check if download_url is obtained
-                if ($downloadURL -ne $null) {
+                if ($downloadURL -ne $null -and $downloadURL -ne "null") {
                     Write-Host "Download URL obtained: $downloadURL"
                 }
             } else {
@@ -60,7 +56,7 @@ try {
         
             # Delay before making the next request (optional)
             Start-Sleep -Seconds 5
-        } while ($downloadURL -eq $null)
+        } while ($downloadURL -eq $null -or $downloadURL -eq "null")
     } else {
         Write-Host "API Request Successful but response content is empty."
     }
