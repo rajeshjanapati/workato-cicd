@@ -29,6 +29,9 @@ try {
 
     # Print the result
     Write-Host "ID Value: $idValue"
-} catch {
-    Write-Host "API Request Failed. Error: $_"
 }
+catch {
+    Write-Host "API Request Failed. Error: $_"
+    Write-Host "Response Content: $($_.Exception.Response.Content)"
+}
+
