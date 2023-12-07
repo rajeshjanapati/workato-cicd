@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       manifest_Id:
-        type: choice
+        type: string
         required: true
         description: Recipe manifest Id to Export
         default: "101814"
