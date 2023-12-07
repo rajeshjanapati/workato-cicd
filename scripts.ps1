@@ -16,20 +16,19 @@ if (!(Test-Path -PathType Container $cicdPath)) {
 }
 
 # API request
-$path = "https://www.workato.com/api/packages/export/101814"
+$idPath = "https://www.workato.com/api/packages/export/101814"
 
 try {
-    $proxies = Invoke-RestMethod -Uri $path -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
-    Write-Host "Response: $proxies"
+    $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
 
     # Check if the response content is not empty
-    if ($proxies) {
+    if ($idResponse) {
         # Convert JSON data to PowerShell object
         # $dataObject = $proxies | ConvertTo-Json
-        Write-Host "JsonObject: $proxies"
+        # Write-Host "JsonObject: $idResponse"
 
         # Extract the "id" value
-        $idValue = $proxies.id
+        $idValue = $idResponse.id
 
         # Print the result
         Write-Host "ID Value: $idValue"
@@ -41,3 +40,30 @@ catch {
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
+
+$downloadURLpath = "https://www.workato.com/api/packages/"+$idValue
+
+try {
+    $downloadURLresponse = Invoke-RestMethod -Uri $downloadURLpath -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
+
+    # Check if the response content is not empty
+    if ($downloadURLresponse) {
+        # Convert JSON data to PowerShell object
+        # $dataObject = $proxies | ConvertTo-Json
+        Write-Host "JsonObject: $downloadURLresponse"
+
+        # Extract the "id" value
+        $downloadURL = $downloadURLresponse.download_url
+
+        # Print the result
+        Write-Host "downloadURL: $downloadURL"
+    } else {
+        Write-Host "API Request Successful but response content is empty."
+    }
+}
+catch {
+    Write-Host "API Request Failed. Error: $_"
+    Write-Host "Response Content: $_.Exception.Response.Content"
+}
+
+
