@@ -22,8 +22,8 @@ jobs:
       - name: Check out Git repository code
         uses: actions/checkout@v3
         with:
-          persist-credentials: false
           fetch-depth: 0
+          token: "${{ secrets.GITHUBTOKEN }}"
 
       - name: CICD
         shell: pwsh
@@ -41,9 +41,9 @@ jobs:
 
       - name: Add local files to Git local branch
         run: |
-            git config --global user.email "rajeshjanapati@gmail.com"
-            git config --global user.name "rajeshjanapati"
-            git add .
+          git config --global user.email "rajeshjanapati@gmail.com"
+          git config --global user.name "rajeshjanapati"
+          git add .
 
       - name: Check for delta changes - Git
         id: check_git_changes
@@ -67,8 +67,5 @@ jobs:
           git status
 
       - name: Push changes to Git
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.WORKATOTOKEN }}
-          branch: cicd
-          
+        run: |
+          git push origin cicd
