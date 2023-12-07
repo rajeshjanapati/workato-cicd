@@ -17,21 +17,25 @@ if (!(Test-Path -PathType Container $cicdPath)) {
 
 # API request
 $path = "https://www.workato.com/api/packages/export/101814"
+
 try {
-    $response = Invoke-RestMethod -Uri $path -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
-    Write-Host "API Request Successful"
-    
-    # Convert JSON data to PowerShell object
-    $dataObject = $response | ConvertFrom-Json
+    $proxies = Invoke-RestMethod -Uri $path -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
 
-    # Extract the "id" value
-    $idValue = $dataObject.id
+    # Check if the response content is not empty
+    if ($proxies) {
+        # Convert JSON data to PowerShell object
+        $dataObject = $proxies | ConvertFrom-Json
 
-    # Print the result
-    Write-Host "ID Value: $idValue"
+        # Extract the "id" value
+        $idValue = $dataObject.id
+
+        # Print the result
+        Write-Host "ID Value: $idValue"
+    } else {
+        Write-Host "API Request Successful but response content is empty."
+    }
 }
 catch {
     Write-Host "API Request Failed. Error: $_"
-    Write-Host "Response Content: $($_.Exception.Response.Content)"
+    Write-Host "Response Content: $_.Exception.Response.Content"
 }
-
