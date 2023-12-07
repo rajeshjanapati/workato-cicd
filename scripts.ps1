@@ -20,11 +20,13 @@ $path = "https://www.workato.com/api/packages/export/101814"
 
 try {
     $proxies = Invoke-RestMethod -Uri $path -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
+    Write-Host "Response: $proxies"
 
     # Check if the response content is not empty
     if ($proxies) {
         # Convert JSON data to PowerShell object
         $dataObject = $proxies | ConvertTo-Json
+        Write-Host "JsonObject: $dataObject"
 
         # Extract the "id" value
         $idValue = $dataObject.id
