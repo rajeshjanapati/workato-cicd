@@ -22,6 +22,7 @@ jobs:
       - name: Check out Git repository code
         uses: actions/checkout@v3
         with:
+          fetch-depth: 0
           token: "${{ secrets.GITHUBTOKEN }}"
 
       - name: CICD
@@ -30,6 +31,10 @@ jobs:
           $env:github_token = "${{ secrets.GITHUBTOKEN }}"
           $env:access_token = "${{ secrets.WORKATOTOKEN }}"
           Invoke-Pester ./scripts.ps1 -Passthru
+
+      - name: Create cicd branch if not exists
+        run: |
+          git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
 
       - name: Debug Git Config
         run: |
