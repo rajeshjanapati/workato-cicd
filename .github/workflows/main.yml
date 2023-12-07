@@ -18,7 +18,7 @@ jobs:
       contents: 'read'
       id-token: 'write'
 
-    steps:
+    steps:          
       - name: Check out Git repository code
         uses: actions/checkout@v3
         with:
@@ -28,19 +28,18 @@ jobs:
       - name: CICD
         shell: pwsh
         run: |
-          $env:github_token = "${{ secrets.GITHUBTOKEN }}"
           $env:access_token = "${{ secrets.WORKATOTOKEN }}"
           Invoke-Pester ./scripts.ps1 -Passthru
 
-      - name: Debug Git Config
+      - name: Create cicd branch if not exists
         run: |
-          git config --list
+          git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
 
       - name: Add local files to Git local branch
         run: |
-            git config --global user.email "rajeshjanapati@gmail.com"
-            git config --global user.name "rajeshjanapati"
-            git add .
+          git config --global user.email "rajeshjanapati@gmail.com"
+          git config --global user.name "rajeshjanapati"
+          git add .
 
       - name: Check for delta changes - Git
         id: check_git_changes
@@ -55,7 +54,7 @@ jobs:
       - name: Commit files to Git
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            git commit -a -m "Apigee Artifacts Export Updates"
+            git commit -a -m "cicd update"
             exit 0
           fi
 
