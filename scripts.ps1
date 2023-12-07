@@ -50,7 +50,7 @@ try {
     # Check if the response content is not empty
     if ($downloadURLresponse) {
         # Convert JSON data to PowerShell object
-        $dataObjectURL = $downloadURLresponse | ConvertTo-Json
+        $dataObjectURL = $downloadURLresponse | ConvertFrom-Json
         Write-Host "JsonObject: $dataObjectURL"
 
         # Extract the "id" value
