@@ -58,6 +58,9 @@ jobs:
       - name: Push changes
         run: |
           git pull --no-edit --no-rebase origin cicd
-          git push origin cicd
+          git add .
+          git commit --amend -m "cicd update"
+          git push -f origin cicd
+
       
       
