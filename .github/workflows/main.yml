@@ -3,7 +3,7 @@ on: push
   # workflow_dispatch:
 
 env:
-  DEPLOYMENT_NAME: Apigee Artifacts Push # TODO: update to deployment name
+  DEPLOYMENT_NAME: CICD Push # TODO: update to deployment name
 
   # Default Target Apigee Organization et environment (can be also be dynamically defined in [Set Variables *] steps)
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
@@ -58,7 +58,7 @@ jobs:
       - name: Commit files to Git
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            git commit -a -m "Apigee Artifacts Export Updates"
+            git commit -a -m "cicd update"
             exit 0
           fi
 
