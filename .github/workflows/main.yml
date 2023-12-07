@@ -1,10 +1,17 @@
 name: Workato-CICD
 on:
-  push:
-    branches:
-      - main  # Adjust this to your main branch name
+  workflow_dispatch:
+    inputs:
+      manifest_Id:
+        type: choice
+        required: true
+        description: Recipe manifest Id to Export
+        default: "101814"
+        options:
+          - "101814"
 env:
   DEPLOYMENT_NAME: CICD Push
+  manifest_id: ${{ github.event.inputs.manifest_Id }}
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
@@ -27,8 +34,9 @@ jobs:
       - name: CICD
         shell: pwsh
         run: |
-          $env:access_token = "${{ secrets.WORKATOTOKEN }}"
-          Invoke-Pester ./scripts.ps1 -Passthru
+          # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
+          # Invoke-Pester ./scripts.ps1 -Passthru
+          ./scripts.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}}
 
       - name: Create cicd branch if not exists
         run: |
