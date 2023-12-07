@@ -22,7 +22,7 @@ jobs:
       - name: Check out Git repository code
         uses: actions/checkout@v3
         with:
-          fetch-depth: -1
+          fetch-depth: 0
           token: "${{ secrets.GITHUBTOKEN }}"
 
       - name: CICD
@@ -32,15 +32,15 @@ jobs:
           $env:access_token = "${{ secrets.WORKATOTOKEN }}"
           Invoke-Pester ./scripts.ps1 -Passthru
 
-      - name: Create cicd branch if not exists
+      - name: Debug Git Config
         run: |
-          git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
+          git config --list
 
       - name: Add local files to Git local branch
         run: |
-          git config --global user.email "rajeshjanapati@gmail.com"
-          git config --global user.name "rajeshjanapati"
-          git add .
+            git config --global user.email "rajeshjanapati@gmail.com"
+            git config --global user.name "rajeshjanapati"
+            git add .
 
       - name: Check for delta changes - Git
         id: check_git_changes
@@ -55,7 +55,7 @@ jobs:
       - name: Commit files to Git
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            git commit -a -m "cicd update"
+            git commit -a -m "Apigee Artifacts Export Updates"
             exit 0
           fi
 
@@ -65,4 +65,4 @@ jobs:
 
       - name: Push changes to Git
         run: |
-          git push origin cicd
+          git push origin artifacts
