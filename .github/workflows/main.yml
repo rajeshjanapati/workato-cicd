@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main  # Adjust this to your main branch name
+
 env:
   DEPLOYMENT_NAME: CICD Push
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
@@ -47,7 +48,7 @@ jobs:
             echo "Local branch is not up to date with remote_branch. Committing and pushing latest code to Git"
             git commit -a -m "cicd update"
             git pull --no-edit --no-rebase origin main
-            git push origin main
+            git push origin main || echo "Failed to push changes. Please check for conflicts."
           else
             echo "Local branch is up to date with Remote branch. No changes to push."
             exit 0
