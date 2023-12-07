@@ -65,4 +65,4 @@ jobs:
 
       - name: Push changes to Git
         run: |
-          git push origin artifacts
+          git push origin cicd
