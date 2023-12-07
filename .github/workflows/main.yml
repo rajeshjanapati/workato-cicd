@@ -45,23 +45,11 @@ jobs:
         id: check_git_changes
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Local branch is not up to date with remote_branch. Pushing latest code to Git"
-          else
-            echo "Local branch is up to date with Remote branch."
-            exit 0
-          fi
-
-      - name: Commit files to Git
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Local branch is not up to date with remote_branch. Committing and pushing latest code to Git"
             git commit -a -m "cicd update"
+            git pull --no-edit --no-rebase origin cicd
+            git push origin cicd
+          else
+            echo "Local branch is up to date with Remote branch. No changes to push."
             exit 0
           fi
-
-      - name: Debug Git Status
-        run: |
-          git status
-
-      - name: Push changes to Git
-        run: |
-          git push origin cicd
