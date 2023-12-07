@@ -50,11 +50,11 @@ try {
     # Check if the response content is not empty
     if ($downloadURLresponse) {
         # Convert JSON data to PowerShell object
-        # $dataObject = $proxies | ConvertTo-Json
+        $dataObjectURL = $downloadURLresponse | ConvertTo-Json
         Write-Host "JsonObject: $downloadURLresponse"
 
         # Extract the "id" value
-        $downloadURL = $downloadURLresponse.download_url
+        $downloadURL = $dataObjectURL.download_url
 
         # Print the result
         Write-Host "downloadURL: $downloadURL"
