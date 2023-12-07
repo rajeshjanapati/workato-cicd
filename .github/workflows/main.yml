@@ -46,7 +46,8 @@ jobs:
         id: check_git_changes
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Local branch is not up to date with remote_branch. Pulling latest code from Git"
+            echo "Local branch is not up to date with remote_branch. Discarding local changes and pulling latest code from Git"
+            git reset --hard
             git pull --no-edit --no-rebase origin cicd
           else
             echo "Local branch is up to date with Remote branch."
