@@ -1,5 +1,3 @@
-# write-output Apigee Artifacts
-$github_token = $env:github_token
 $access_token = $env:access_token
 
 $headers = @{ Authorization = "Bearer $access_token" }
