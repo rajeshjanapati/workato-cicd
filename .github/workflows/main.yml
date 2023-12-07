@@ -8,6 +8,7 @@ env:
   DEPLOYMENT_NAME: CICD Push
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+  
 
 jobs:
   Workato-CICD:
