@@ -1,4 +1,4 @@
-name: Workato-CICD
+name: Export-ManiFest CICD
 on:
   workflow_dispatch:
     inputs:
@@ -10,14 +10,14 @@ on:
         options:
           - "101814"
 env:
-  DEPLOYMENT_NAME: CICD Push
+  DEPLOYMENT_NAME: Export-ManiFest CICD
   manifest_id: ${{ github.event.inputs.manifest_Id }}
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
 jobs:
   Workato-CICD:
-    name: Workato-CICD
+    name: Export-ManiFest CICD
     runs-on: ubuntu-latest
 
     permissions:
@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
           token: "${{ secrets.GITHUBTOKEN }}"
 
-      - name: CICD
+      - name: Export CICD
         shell: pwsh
         run: |
           # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
