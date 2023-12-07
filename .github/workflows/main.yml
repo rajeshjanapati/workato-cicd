@@ -11,7 +11,7 @@ env:
 
 jobs:
   Workato-CICD:
-    name: FL Apigee Artifacts Export
+    name: Workato-CICD
     runs-on: ubuntu-latest
 
     permissions:
