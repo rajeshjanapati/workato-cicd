@@ -22,7 +22,6 @@ jobs:
       - name: Check out Git repository code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
           token: "${{ secrets.GITHUBTOKEN }}"
 
       - name: CICD
@@ -50,7 +49,8 @@ jobs:
         id: check_git_changes
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Local branch is not up to date with remote_branch. Pushing latest code to Git"
+            echo "Local branch is not up to date with remote_branch. Pulling latest code from Git"
+            git pull --no-edit --no-rebase origin cicd
           else
             echo "Local branch is up to date with Remote branch."
             exit 0
