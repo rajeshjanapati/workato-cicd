@@ -46,8 +46,8 @@ jobs:
           if [[ -n "$(git status --porcelain)" ]]; then
             echo "Local branch is not up to date with remote_branch. Committing and pushing latest code to Git"
             git commit -a -m "cicd update"
-            git pull --no-edit --no-rebase origin cicd
-            git push origin cicd
+            git pull --no-edit --no-rebase origin main
+            git push origin main
           else
             echo "Local branch is up to date with Remote branch. No changes to push."
             exit 0
