@@ -25,11 +25,11 @@ try {
     # Check if the response content is not empty
     if ($proxies) {
         # Convert JSON data to PowerShell object
-        $dataObject = $proxies | ConvertTo-Json
-        Write-Host "JsonObject: $dataObject"
+        # $dataObject = $proxies | ConvertTo-Json
+        Write-Host "JsonObject: $proxies"
 
         # Extract the "id" value
-        $idValue = $dataObject.id
+        $idValue = $proxies.id
 
         # Print the result
         Write-Host "ID Value: $idValue"
