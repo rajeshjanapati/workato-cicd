@@ -48,8 +48,10 @@ try {
                 # Extract the "download_url" value
                 $downloadURL = $dataObjectURL.download_url
 
+                Write-Host "downloadURL:$downloadURL"
+
                 # Check if download_url is obtained
-                if ($downloadURL -and $downloadURL -ne "") {
+                if ($downloadURL -and $downloadURL -ne "null") {
                     Write-Host "Download URL obtained: $downloadURL"
                 }
             } else {
@@ -58,7 +60,7 @@ try {
 
             # Delay before making the next request (optional)
             Start-Sleep -Seconds 5
-        } while (-not $downloadURL -or $downloadURL -eq "")
+        } while (-not $downloadURL -or $downloadURL -eq "null")
     } else {
         Write-Host "API Request Successful but response content is empty."
     }
@@ -69,4 +71,5 @@ catch {
 }
 
 # Rest of your script...
+
 
