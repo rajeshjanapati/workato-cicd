@@ -10,7 +10,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
 jobs:
-  apigee-window-artifacts:
+  Workato-CICD:
     name: FL Apigee Artifacts Export
     runs-on: ubuntu-latest
 
@@ -25,7 +25,7 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
-      - name: Perform Apigee Export
+      - name: CICD
         shell: pwsh
         run: |
           $env:github_token = "${{ secrets.GITHUBTOKEN }}"
