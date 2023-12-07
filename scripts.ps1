@@ -43,12 +43,23 @@ try {
             if ($downloadURLresponse) {
                 # Access the "download_url" property directly
                 $downloadURL = $downloadURLresponse.download_url
-        
-                Write-Host "downloadURL: $downloadURL"
-        
+                
                 # Check if download_url is obtained
                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
                     Write-Host "Download URL obtained: $downloadURL"
+
+                    # Extract file name from the URL
+                    $fileName = [System.IO.Path]::GetFileName($downloadURL)
+                
+                    # Set the path where you want to save the file
+                    $savePath = Join-Path $PSScriptRoot $fileName
+                
+                    Write-Host "Downloading file to: $savePath"
+                
+                    # Download the file
+                    Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
+                
+                    Write-Host "File downloaded successfully!"
                 }
             } else {
                 Write-Host "API Request Successful but response content is empty."
