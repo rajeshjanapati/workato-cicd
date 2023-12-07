@@ -22,7 +22,7 @@ jobs:
       - name: Check out Git repository code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: -1
           token: "${{ secrets.GITHUBTOKEN }}"
 
       - name: CICD
@@ -36,10 +36,6 @@ jobs:
         run: |
           git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
 
-      - name: Debug Git Config
-        run: |
-          git config --list
-          
       - name: Add local files to Git local branch
         run: |
           git config --global user.email "rajeshjanapati@gmail.com"
@@ -50,8 +46,7 @@ jobs:
         id: check_git_changes
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Local branch is not up to date with remote_branch. Pulling latest code from Git"
-            git pull --no-edit --no-rebase origin cicd
+            echo "Local branch is not up to date with remote_branch. Pushing latest code to Git"
           else
             echo "Local branch is up to date with Remote branch."
             exit 0
