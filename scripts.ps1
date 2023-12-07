@@ -46,13 +46,13 @@ try {
                 
                 # Check if download_url is obtained
                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
-                    Write-Host "Download URL obtained: $downloadURL"
+                    # Write-Host "Download URL obtained: $downloadURL"
 
                     # Extract file name from the URL
                     $fileName = [System.IO.Path]::GetFileName($downloadURL)
                 
-                    # Set the path where you want to save the file
-                    $savePath = Join-Path $PSScriptRoot $fileName
+                    # Set the path where you want to save the file (inside the cicd folder)
+                    $savePath = Join-Path $PSScriptRoot "cicd\$fileName"
                 
                     Write-Host "Downloading file to: $savePath"
                 
