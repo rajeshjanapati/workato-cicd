@@ -46,7 +46,9 @@ jobs:
         id: check_git_changes
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Changes detected, committing..."
+            echo "Changes detected, pulling latest changes..."
+            git pull origin cicd
+            git add .
             git commit -m "cicd update"
           else
             echo "No changes to commit."
@@ -56,3 +58,4 @@ jobs:
       - name: Push changes to Git
         run: |
           git push origin cicd
+
