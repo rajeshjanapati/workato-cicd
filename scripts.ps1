@@ -42,6 +42,7 @@ catch {
 }
 
 $downloadURLpath = "https://www.workato.com/api/packages/"+$idValue
+Write-Host "downloadURLpath: $downloadURLpath"
 
 try {
     $downloadURLresponse = Invoke-RestMethod -Uri $downloadURLpath -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
