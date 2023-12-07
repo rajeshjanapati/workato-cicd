@@ -6,12 +6,12 @@ $headers = @{ Authorization = "Bearer $access_token" }
 
 # create cicd folder if not exists
 $cicdPath = "cicd"
-if (!(Test-Path -PathType Container $cicdPath)) {
-    mkdir $cicdPath
-    cd $cicdPath
+if (!(Test-Path -PathType Container cicd)) {
+    mkdir "cicd"
+    cd cicd
     Write-Host "Inside if: Created and moved to $cicdPath"
 } else {
-    cd -Path $cicdPath
+    cd cicd
     Write-Host "Inside else: Moved to $cicdPath"
 }
 
