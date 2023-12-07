@@ -24,7 +24,7 @@ try {
     # Check if the response content is not empty
     if ($proxies) {
         # Convert JSON data to PowerShell object
-        $dataObject = $proxies | ConvertFrom-Json
+        $dataObject = $proxies | ConvertTo-Json
 
         # Extract the "id" value
         $idValue = $dataObject.id
