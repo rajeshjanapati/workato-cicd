@@ -17,7 +17,7 @@ if (!(Test-Path -PathType Container cicd)) {
 # Rest of your script...
 
 # Initial API request to get the ID
-$idPath = "https://www.workato.com/api/packages/export/101814"
+$idPath = "https://www.workato.com/api/packages/export/101897"
 
 try {
     $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
