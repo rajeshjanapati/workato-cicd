@@ -37,30 +37,30 @@ try {
         do {
             $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
             Write-Host "downloadURLpath: $downloadURLpath"
-
+        
             $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
-
+        
             if ($downloadURLresponse) {
                 # Convert JSON data to PowerShell object
                 $dataObjectURL = $downloadURLresponse | ConvertTo-Json
                 Write-Host "JsonObject: $dataObjectURL"
-
+        
                 # Extract the "download_url" value
                 $downloadURL = $dataObjectURL.download_url
-
-                Write-Host "downloadURL:$downloadURL"
-
+        
+                Write-Host "downloadURL: $downloadURL"
+        
                 # Check if download_url is obtained
-                if ($downloadURL -and $downloadURL -ne "null") {
+                if ($downloadURL -ne $null) {
                     Write-Host "Download URL obtained: $downloadURL"
                 }
             } else {
                 Write-Host "API Request Successful but response content is empty."
             }
-
+        
             # Delay before making the next request (optional)
             Start-Sleep -Seconds 5
-        } while (-not $downloadURL -or $downloadURL -eq "null")
+        } while ($downloadURL -eq $null)
     } else {
         Write-Host "API Request Successful but response content is empty."
     }
