@@ -1,6 +1,10 @@
-$access_token = $env:access_token
+# Input parameters
+Param (
+    [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
+    [Parameter(mandatory = $true)][string]$manifestId # To receive manifest_ID      
+)
 
-$headers = @{ Authorization = "Bearer $access_token" }
+$headers = @{ Authorization = "Bearer $accessToken" }
 
 # create cicd folder if not exists
 $cicdPath = "cicd"
@@ -17,7 +21,7 @@ if (!(Test-Path -PathType Container cicd)) {
 # Rest of your script...
 
 # Initial API request to get the ID
-$idPath = "https://www.workato.com/api/packages/export/101897"
+$idPath = "https://www.workato.com/api/packages/export/$manifestId"
 
 try {
     $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
