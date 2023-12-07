@@ -8,7 +8,6 @@ env:
   DEPLOYMENT_NAME: CICD Push
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
-  
 
 jobs:
   Workato-CICD:
@@ -43,13 +42,15 @@ jobs:
           git config --global user.name "rajeshjanapati"
           git add .
 
-      - name: Commit files to Git
+      - name: Check for changes
+        id: check_git_changes
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Changes detected, committing..."
             git commit -m "cicd update"
-            exit 0
           else
             echo "No changes to commit."
+            exit 0
           fi
 
       - name: Push changes to Git
