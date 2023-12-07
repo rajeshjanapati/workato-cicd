@@ -15,7 +15,7 @@ if (!(Test-Path -PathType Container $cicdPath)) {
     Write-Host "Inside else: Moved to $cicdPath"
 }
 
-# API request
+# Initial API request to get the ID
 $idPath = "https://www.workato.com/api/packages/export/101814"
 
 try {
@@ -23,41 +23,37 @@ try {
 
     # Check if the response content is not empty
     if ($idResponse) {
-        # Convert JSON data to PowerShell object
-        # $dataObject = $proxies | ConvertTo-Json
-        # Write-Host "JsonObject: $idResponse"
-
         # Extract the "id" value
         $idValue = $idResponse.id
 
         # Print the result
         Write-Host "ID Value: $idValue"
-    } else {
-        Write-Host "API Request Successful but response content is empty."
-    }
-}
-catch {
-    Write-Host "API Request Failed. Error: $_"
-    Write-Host "Response Content: $_.Exception.Response.Content"
-}
 
-$downloadURLpath = "https://www.workato.com/api/packages/"+$idValue
-Write-Host "downloadURLpath: $downloadURLpath"
+        # Make subsequent API requests until download_url is not null
+        $downloadURL = $null
+        while (-not $downloadURL) {
+            $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
+            Write-Host "downloadURLpath: $downloadURLpath"
 
-try {
-    $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
+            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
 
-    # Check if the response content is not empty
-    if ($downloadURLresponse) {
-        # Convert JSON data to PowerShell object
-        $dataObjectURL = $downloadURLresponse | ConvertTo-Json
-        Write-Host "JsonObject: $dataObjectURL"
+            if ($downloadURLresponse) {
+                # Convert JSON data to PowerShell object
+                $dataObjectURL = $downloadURLresponse | ConvertTo-Json
+                Write-Host "JsonObject: $dataObjectURL"
 
-        # Extract the "id" value
-        $downloadURL = $dataObjectURL.download_url
+                # Extract the "download_url" value
+                $downloadURL = $dataObjectURL.download_url
 
-        # Print the result
-        Write-Host "downloadURL: $downloadURL"
+                # Print the result
+                Write-Host "downloadURL: $downloadURL"
+            } else {
+                Write-Host "API Request Successful but response content is empty."
+            }
+
+            # Delay before making the next request (optional)
+            Start-Sleep -Seconds 5
+        }
     } else {
         Write-Host "API Request Successful but response content is empty."
     }
