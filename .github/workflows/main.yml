@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main  # Adjust this to your main branch name
-
 env:
   DEPLOYMENT_NAME: CICD Push
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
@@ -30,17 +29,14 @@ jobs:
         run: |
           $env:access_token = "${{ secrets.WORKATOTOKEN }}"
           Invoke-Pester ./scripts.ps1 -Passthru
-
       - name: Create cicd branch if not exists
         run: |
           git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
-
       - name: Add local files to Git local branch
         run: |
           git config --global user.email "rajeshjanapati@gmail.com"
           git config --global user.name "rajeshjanapati"
           git add .
-
       - name: Check for delta changes - Git
         id: check_git_changes
         run: |
@@ -48,7 +44,7 @@ jobs:
             echo "Local branch is not up to date with remote_branch. Committing and pushing latest code to Git"
             git commit -a -m "cicd update"
             git pull --no-edit --no-rebase origin cicd
-            git push origin cicd || echo "Failed to push changes. Please check for conflicts."
+            git push origin cicd
           else
             echo "Local branch is up to date with Remote branch. No changes to push."
             exit 0
