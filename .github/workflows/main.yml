@@ -8,7 +8,6 @@ env:
   DEPLOYMENT_NAME: CICD Push
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
-  
 
 jobs:
   Workato-CICD:
@@ -43,28 +42,14 @@ jobs:
           git config --global user.name "rajeshjanapati"
           git add .
 
-      - name: Check for delta changes - Git
-        id: check_git_changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Local branch is not up to date with remote_branch. Discarding local changes and pulling latest code from Git"
-            git reset --hard
-            git pull --no-edit --no-rebase origin cicd
-          else
-            echo "Local branch is up to date with Remote branch."
-            exit 0
-          fi
-
       - name: Commit files to Git
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
-            git commit -a -m "cicd update"
+            git commit -m "cicd update"
             exit 0
+          else
+            echo "No changes to commit."
           fi
-
-      - name: Debug Git Status
-        run: |
-          git status
 
       - name: Push changes to Git
         run: |
