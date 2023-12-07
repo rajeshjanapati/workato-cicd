@@ -8,10 +8,10 @@ $headers = @{ Authorization = "Bearer $access_token" }
 $cicdPath = "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
     mkdir $cicdPath
-    Set-Location -Path $cicdPath
+    cd $cicdPath
     Write-Host "Inside if: Created and moved to $cicdPath"
 } else {
-    Set-Location -Path $cicdPath
+    cd -Path $cicdPath
     Write-Host "Inside else: Moved to $cicdPath"
 }
 
@@ -76,6 +76,7 @@ catch {
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
+cd ..
 
 # Rest of your script...
 
