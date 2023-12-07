@@ -51,7 +51,8 @@ jobs:
             git config pull.rebase true  # Set pull.rebase to true
             git add .
             git commit -m "cicd update"
-            git pull --no-edit --no-rebase origin cicd
+            git fetch origin cicd
+            git reset --hard origin/cicd
           else
             echo "No changes to commit."
             exit 0
