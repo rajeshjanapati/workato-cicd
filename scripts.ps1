@@ -15,6 +15,7 @@ if (!(Test-Path -PathType Container $cicdPath)) {
     Write-Host "Inside else: Moved to $cicdPath"
 }
 
+
 # Initial API request to get the ID
 $idPath = "https://www.workato.com/api/packages/export/101814"
 
@@ -31,7 +32,7 @@ try {
 
         # Make subsequent API requests until download_url is not null
         $downloadURL = $null
-        while (-not $downloadURL) {
+        do {
             $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
             Write-Host "downloadURLpath: $downloadURLpath"
 
@@ -48,7 +49,6 @@ try {
                 # Check if download_url is obtained
                 if ($downloadURL) {
                     Write-Host "Download URL obtained: $downloadURL"
-                    break  # Exit the loop
                 }
             } else {
                 Write-Host "API Request Successful but response content is empty."
@@ -56,7 +56,7 @@ try {
 
             # Delay before making the next request (optional)
             Start-Sleep -Seconds 5
-        }
+        } while (-not $downloadURL)
     } else {
         Write-Host "API Request Successful but response content is empty."
     }
