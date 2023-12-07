@@ -45,8 +45,11 @@ try {
                 # Extract the "download_url" value
                 $downloadURL = $dataObjectURL.download_url
 
-                # Print the result
-                Write-Host "downloadURL: $downloadURL"
+                # Check if download_url is obtained
+                if ($downloadURL) {
+                    Write-Host "Download URL obtained: $downloadURL"
+                    break  # Exit the loop
+                }
             } else {
                 Write-Host "API Request Successful but response content is empty."
             }
@@ -62,5 +65,3 @@ catch {
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
-
-
