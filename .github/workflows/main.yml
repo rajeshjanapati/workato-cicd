@@ -3,11 +3,11 @@ on:
   push:
     branches:
       - main  # Adjust this to your main branch name
+
 env:
   DEPLOYMENT_NAME: CICD Push
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
-  
 
 jobs:
   Workato-CICD:
@@ -30,14 +30,17 @@ jobs:
         run: |
           $env:access_token = "${{ secrets.WORKATOTOKEN }}"
           Invoke-Pester ./scripts.ps1 -Passthru
+
       - name: Create cicd branch if not exists
         run: |
           git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
+
       - name: Add local files to Git local branch
         run: |
           git config --global user.email "rajeshjanapati@gmail.com"
           git config --global user.name "rajeshjanapati"
           git add .
+
       - name: Check for delta changes - Git
         id: check_git_changes
         run: |
