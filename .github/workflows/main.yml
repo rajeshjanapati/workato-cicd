@@ -47,6 +47,7 @@ jobs:
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
             echo "Changes detected, pulling latest changes..."
+            git config pull.rebase true  # Set pull.rebase to true
             git pull origin cicd
             git add .
             git commit -m "cicd update"
