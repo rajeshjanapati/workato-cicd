@@ -1,0 +1,35 @@
+name: Import-ManiFest CICD
+on:
+  workflow_dispatch:
+    inputs:
+      folder_Id:
+        type: string
+        required: true
+        description: Recipe folder Id to Import
+      manifest_name:
+        type: string
+        required: true
+        description: Manifest Name to Import
+env:
+  DEPLOYMENT_NAME: Export-ManiFest CICD
+  folder_Id: ${{ github.event.inputs.folder_Id }}
+  manifest_name: ${{ github.event.inputs.manifest_name }}
+  Workato_Token: ${{ secrets.PRODACCESSTOKEN }}
+
+jobs:
+  Workato-CICD:
+    name: Import-ManiFest CICD
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Import CICD
+        shell: pwsh
+        run: |
+          # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
+          # Invoke-Pester ./scripts.ps1 -Passthru
+          ./scripts.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{ github.event.inputs.manifest_name }}
+
