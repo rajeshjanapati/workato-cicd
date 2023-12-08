@@ -11,6 +11,7 @@ $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=tr
 
 # Check if the ZIP file exists in the current directory
 $zipFile = Get-ChildItem -Filter "$manifestName.zip"
+Write-Host "FileName:$zipFile"
 
 if ($zipFile) {
   # Read the ZIP file as byte array
