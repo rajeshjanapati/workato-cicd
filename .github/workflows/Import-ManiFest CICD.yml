@@ -1,36 +1,68 @@
-name: Import-ManiFest CICD
+name: Export-ManiFest CICD
 on:
   workflow_dispatch:
     inputs:
-      folder-Id:
+      manifest_Id:
         type: string
         required: true
-        description: Recipe folder Id to Import
-      manifest-name:
-        type: string
-        required: true
-        description: Manifest Name to Import
+        description: Recipe manifest Id to Export
+        default: "101814"
+        options:
+          - "101814"
 env:
-  DEPLOYMENT_NAME: Import-ManiFest CICD
-  folder_Id: ${{ github.event.inputs.folder-Id }}
-  manifest_name: ${{ github.event.inputs.manifest-name }}
-  Workato_Token: ${{ secrets.PRODACCESSTOKEN }}
+  DEPLOYMENT_NAME: Export-ManiFest CICD
+  manifest_id: ${{ github.event.inputs.manifest_Id }}
+  Workato_Token: ${{ secrets.WORKATOTOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
 
 jobs:
   Workato-CICD:
-    name: Import-ManiFest CICD
+    name: Export-ManiFest CICD
     runs-on: ubuntu-latest
 
     permissions:
       contents: 'read'
       id-token: 'write'
 
-    steps:
-    - name: Export CICD
-      shell: pwsh
-      run: |
-        $env:access_token = "${{ secrets.PRODACCESSTOKEN }}"
-        $env:folder_Id = ${{env.folder_Id}}
-        $env:manifest_name = ${{env.manifest_name}}
-        Invoke-Pester ./import.ps1 -Passthru
-        # ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}}
+    steps:          
+      - name: Check out Git repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUBTOKEN }}"
+
+      - name: Export CICD
+        shell: pwsh
+        run: |
+          # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
+          # Invoke-Pester ./scripts.ps1 -Passthru
+          ./import.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}}
+
+      - name: Create cicd branch if not exists
+        run: |
+          git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
+
+      - name: Add local files to Git local branch
+        run: |
+          git config --global user.email "rajeshjanapati@gmail.com"
+          git config --global user.name "rajeshjanapati"
+          git add .
+
+      - name: Check for delta changes - Git
+        id: check_git_changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Local branch is not up to date with remote_branch. Committing and pushing latest code to Git"
+            git commit -a -m "cicd update"
+
+            # Attempt to pull and auto-merge
+            if git pull --no-edit --no-rebase origin cicd; then
+              echo "Merge successful. Pushing changes."
+              git push origin cicd
+            else
+              echo "Merge conflicts occurred. Please resolve conflicts and commit the changes."
+            fi
+          else
+            echo "Local branch is up to date with Remote branch. No changes to push."
+            exit 0
+          fi
