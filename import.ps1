@@ -32,8 +32,22 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
         $requestFile = @{ file = $zipContent; filename = $zipFile.Name }
 
         $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
-        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $headers -Body $requestFile -ContentType "multipart/form-data"
-        Write-Host "manifestName $manifestName"
+        try {
+            $response = Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $headers -Body $requestFile -ContentType "multipart/form-data"
+            Write-Host "Manifest successfully imported. Response: $($response | ConvertTo-Json)"
+        } catch {
+            Write-Host "Error occurred while making the API request: $_"
+            if ($_.Exception.Response) {
+                $errorResponse = $_.Exception.Response.GetResponseStream()
+                $reader = New-Object System.IO.StreamReader($errorResponse)
+                $reader.BaseStream.Position = 0
+                $reader.DiscardBufferedData()
+                $errorDetails = $reader.ReadToEnd()
+                Write-Host "Error details: $errorDetails"
+            }
+            exit 1
+        }
+
     }
     else {
         Write-Host "No zip file found with the name $manifestName"
