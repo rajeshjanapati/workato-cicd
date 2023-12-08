@@ -14,17 +14,24 @@ Set-Location $manifestDirectory
 $currentdir = Get-Location
 $manifestNameFolder = "$currentdir/$manifestName"
 
-https://www.workato.com/api/packages/import/#{_('data.lookup_table.f64a4d0d.entry.col3')}?restart_recipes=true
+# https://www.workato.com/api/packages/import/#{_('data.lookup_table.f64a4d0d.entry.col3')}?restart_recipes=true
 
 if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder )) {
     Set-Location $manifestNameFolder
-    $zipFile = Get-ChildItem *.zip
-    $requestFile = @{file = Get-Item -Path $zipFile }
-    $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
-    Invoke-WebRequest  -Uri $uri -Method Post -Form $requestFile -Headers $headers
-    Write-Host "manifestName $manifestName "
+    $zipFile = Get-ChildItem -Filter "$manifestName.zip"
+
+    if ($zipFile) {
+        $requestFile = @{file = Get-Item -Path $zipFile.FullName }
+        $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
+        Invoke-WebRequest -Uri $uri -Method Post -Form $requestFile -Headers $headers
+        Write-Host "manifestName $manifestName"
+    }
+    else {
+        Write-Host "No zip file found with the name $manifestName"
+    }
 }
 else {
-    Write-Error "Error Import manifest for $manifestName : Invalid manifest Name"
+    Write-Host "Either manifestName is 'null' or $manifestNameFolder does not exist."
 }
+
 
