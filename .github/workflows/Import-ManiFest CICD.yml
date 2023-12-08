@@ -28,6 +28,12 @@ jobs:
       id-token: 'write'
 
     steps:
+      - name: Check out Git repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUBTOKEN }}"
+          
       - name: Import CICD
         shell: pwsh
         run: |
