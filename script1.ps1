@@ -1,4 +1,3 @@
-Write-Host "running the script...!"
 
 # Input parameters
 Param (
@@ -6,6 +5,7 @@ Param (
     [Parameter(mandatory = $true)][string]$folderId, # To receive folderId  
     [Parameter(mandatory = $true)][string]$manifestName # To receive manifest Name  
 )
+Write-Host "running the script...!"
 
 $headers = @{Authorization = "Bearer $accessToken " }
 
