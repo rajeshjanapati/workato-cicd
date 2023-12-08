@@ -14,8 +14,6 @@ Write-Host "folderId:$folderId"
 
 $headers = @{ 'Authorization' = "Bearer $accessToken" }
 
-# Rest of your script remains unchanged
-
 $manifestDirectory = "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
 
@@ -34,7 +32,7 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
         # Read the content of the zip file as bytes
         $zipContent = [IO.File]::ReadAllBytes($zipFile.FullName)
         $requestFile = @{
-            file = [System.IO.MemoryStream]::new($zipContent)
+            file = $zipContent
             filename = $zipFile.Name
         }
 
@@ -45,7 +43,7 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
             $webHeaderCollection.Add($key, $headers[$key])
         }
 
-        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body $requestFile -ContentType "multipart/form-data"
+        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body ($requestFile | ConvertTo-Json) -ContentType "application/json"
         Write-Host "manifestName $manifestName"
     }
     else {
