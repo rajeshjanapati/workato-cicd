@@ -92,5 +92,5 @@ jobs:
           name: ${{ env.summary_file_name }}
           path: cicd/${{ env.summary_file_name }}
 
-      # - name: Remove Summary Log File from Git Repository
-      #   run: rm cicd/${{ env.summary_file_name }}
+      - name: Remove Summary Log File from Git Repository
+        run: rm cicd/${{ env.summary_file_name }}
