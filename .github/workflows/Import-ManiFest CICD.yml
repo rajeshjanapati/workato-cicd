@@ -2,18 +2,19 @@ name: Import-ManiFest CICD
 on:
   workflow_dispatch:
     inputs:
-      folder-Id:
+      manifest_Name:
         type: string
         required: true
         description: Recipe folder Id to Import
-      manifest-name:
+      folder_Id:
         type: string
         required: true
         description: Manifest Name to Import
+        
 env:
   DEPLOYMENT_NAME: Import-ManiFest CICD
-  folder_Id: ${{ github.event.inputs.folder-Id }}
-  manifest_name: ${{ github.event.inputs.manifest-name }}
+  folder_Id: ${{ github.event.inputs.folder_Id }}
+  manifest_name: ${{ github.event.inputs.manifest_name }}
   Workato_Token: ${{ secrets.PRODACCESSTOKEN }}
 
 jobs:
@@ -25,8 +26,20 @@ jobs:
       contents: 'read'
       id-token: 'write'
 
-    steps:
+    steps:          
+      - name: Check out Git repository code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUBTOKEN }}"
+
       - name: Import CICD
         shell: pwsh
         run: |
-          ./script1.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{env.manifest_name}}
+          # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
+          # Invoke-Pester ./scripts.ps1 -Passthru
+          ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}}
+
+      - name: Create cicd branch if not exists
+        run: |
+          git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
