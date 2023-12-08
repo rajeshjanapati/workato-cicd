@@ -29,7 +29,7 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder )) {
     if ($zipFile) {
         $requestFile = @{file = Get-Item -Path $zipFile.FullName }
         $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
-        Invoke-WebRequest -Uri $uri -Method Post -Form $requestFile -Headers $headers
+        Invoke-WebRequest -Uri $uri -Method 'POST' -Form $requestFile -Headers $headers
         Write-Host "manifestName $manifestName"
     }
     else {
