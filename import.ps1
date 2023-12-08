@@ -5,9 +5,6 @@ Param (
     [Parameter(mandatory = $true)][string]$folderId # To receive folderId
 )
 
-# Clean the accessToken to remove invalid characters
-$accessToken = $accessToken -replace "[^a-zA-Z0-9=]", ""
-
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
 
@@ -32,21 +29,19 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
         $requestFile = @{ file = $zipContent; filename = $zipFile.Name }
 
         $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
+
+        $webHeaderCollection = New-Object 'System.Net.WebHeaderCollection'
+        foreach ($key in $headers.Keys) {
+            $webHeaderCollection.Add($key, $headers[$key])
+        }
+
         try {
-            $response = Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $headers -Body $requestFile -ContentType "multipart/form-data"
-            Write-Host "Manifest successfully imported. Response: $($response | ConvertTo-Json)"
+            Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body $requestFile -ContentType "multipart/form-data"
+            Write-Host "manifestName $manifestName"
         } catch {
             Write-Host "Error occurred while making the API request: $_"
-            if ($_.Exception.Response -ne $null) {
-                $errorResponse = $_.Exception.Response
-                $errorDetails = $errorResponse.Content.ReadAsStringAsync().Result
-                Write-Host "Error details: $errorDetails"
-            }
-            exit 1
         }
-        }
-        
-           
+    }
     else {
         Write-Host "No zip file found with the name $manifestName"
     }
