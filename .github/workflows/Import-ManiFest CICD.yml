@@ -11,7 +11,7 @@ on:
         required: true
         description: Manifest Name to Import
 env:
-  DEPLOYMENT_NAME: Export-ManiFest CICD
+  DEPLOYMENT_NAME: Import-ManiFest CICD
   folder_Id: ${{ github.event.inputs.folder-Id }}
   manifest_name: ${{ github.event.inputs.manifest-name }}
   Workato_Token: ${{ secrets.PRODACCESSTOKEN }}
