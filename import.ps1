@@ -104,8 +104,8 @@ else{
   Write-Host "Please atleast one action to perform...!"
 }
 
-$manifestDirectory = "cicd"
-Set-Location $manifestDirectory
+# $manifestDirectory = "cicd"
+# Set-Location $manifestDirectory
 
 # Combine the current directory path with the file name
 $filePath = $manifestDirectory
