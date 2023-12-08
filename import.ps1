@@ -104,8 +104,11 @@ else{
   Write-Host "Please atleast one action to perform...!"
 }
 
+$manifestDirectory = "cicd"
+Set-Location $manifestDirectory
+
 # Combine the current directory path with the file name
-$filePath = Join-Path -Path $PWD -ChildPath $summary_file_name
+$filePath = $manifestDirectory
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
