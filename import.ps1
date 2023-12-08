@@ -46,24 +46,32 @@ if ($action -eq "Create") {
   }
 }
 elseif ($action -eq "ImportAll") {
+  Write-Host "Entered into IMPORTALL...!"
   Set-Location $manifestDirectory
   $currentdir = Get-Location
+  $manifestNameFolder = "$currentdir"
+  Set-Location $manifestNameFolder
   $zipFiles = Get-ChildItem -Filter "*.zip"
 
   foreach ($zipFile in $zipFiles) {
+    Write-Host "Getting each ZIP FILE...!"
+    # Read the ZIP file as byte array
     $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
 
     Write-Host "Found ZIP file: $zipFile"
+    Write-Host "Start Import manifest for $manifestName"
 
     # Upload the ZIP file content to Workato
+    Write-Host "Uploading ZIP file content to $uri..."
     $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
     Write-Host "API:$uri"
 
     try {
       Invoke-RestMethod -Uri $uri -Method "POST" -Headers $headers -Body $fileContent -ContentType "application/zip"
-      Write-Host "manifestName $($zipFile.BaseName)"
+
+      Write-Host "manifestName $manifestName"
     } catch {
-      Write-Host "Error uploading ZIP file $($zipFile.BaseName): $($_.Exception.Message)"
+      Write-Host "Error uploading ZIP file: $($_.Exception.Message)"
     }
   }
 
