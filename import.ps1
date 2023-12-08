@@ -1,11 +1,15 @@
 Write-Host "running the script...!"
 
-# Input parameters
-Param (
-    [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
-    [Parameter(mandatory = $true)][string]$folderId, # To receive folderId  
-    [Parameter(mandatory = $true)][string]$manifestName # To receive manifest Name  
-)
+$accessToken = $env:access_token
+$folderId = $env:folder_Id
+$manifestName = $env:manifest_name
+
+# # Input parameters
+# Param (
+#     [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
+#     [Parameter(mandatory = $true)][string]$folderId, # To receive folderId  
+#     [Parameter(mandatory = $true)][string]$manifestName # To receive manifest Name  
+# )
 
 $headers = @{Authorization = "Bearer $accessToken " }
 
