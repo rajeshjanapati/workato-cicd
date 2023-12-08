@@ -27,8 +27,7 @@ if ($action -eq "Create") {
     $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
 
     Write-Host "Found ZIP file: $zipFile"
-    Write-Host "Start Import manifest for $manifestName"
-
+    
     # Upload the ZIP file content to Workato
     Write-Host "Uploading ZIP file content to $uri..."
     $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
@@ -59,8 +58,7 @@ elseif ($action -eq "ImportAll") {
     $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
 
     Write-Host "Found ZIP file: $zipFile"
-    Write-Host "Start Import manifest for $manifestName"
-
+    
     # Upload the ZIP file content to Workato
     Write-Host "Uploading ZIP file content to $uri..."
     $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
