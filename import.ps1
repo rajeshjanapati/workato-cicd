@@ -5,9 +5,6 @@ Param (
     [Parameter(mandatory = $true)][string]$folderId # To receive folderId
 )
 
-Write-Host "manifestName:$manifestName"
-Write-Host "folderId:$folderId"
-
 $headers = @{ 'Authorization' = "Bearer $accessToken" }
 
 $manifestDirectory = "cicd"
@@ -29,18 +26,8 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
         $requestFile = @{ file = $zipContent; filename = $zipFile.Name }
 
         $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
-
-        $webHeaderCollection = New-Object 'System.Net.WebHeaderCollection'
-        foreach ($key in $headers.Keys) {
-            $webHeaderCollection.Add($key, $headers[$key])
-        }
-
-        try {
-            Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body $requestFile -ContentType "multipart/form-data"
-            Write-Host "manifestName $manifestName"
-        } catch {
-            Write-Host "Error occurred while making the API request: $_"
-        }
+        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $headers -Body $requestFile -ContentType "multipart/form-data"
+        Write-Host "manifestName $manifestName"
     }
     else {
         Write-Host "No zip file found with the name $manifestName"
