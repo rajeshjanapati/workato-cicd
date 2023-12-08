@@ -5,13 +5,17 @@ Param (
     [Parameter(mandatory = $true)][string]$folderId # To receive folderId
 )
 
-# Trim the value to remove any leading or trailing spaces
-$accessToken = $accessToken.Trim()
+# Convert the $accessToken value to bytes and then back to a string to remove invalid characters
+$accessTokenBytes = [System.Text.Encoding]::UTF8.GetBytes($accessToken)
+$accessToken = [System.Text.Encoding]::UTF8.GetString($accessTokenBytes)
 
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
 
 $headers = @{ 'Authorization' = "Bearer $accessToken" }
+
+# Rest of your script remains unchanged
+
 
 $manifestDirectory = "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
