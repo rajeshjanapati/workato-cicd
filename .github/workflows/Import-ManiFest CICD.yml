@@ -37,7 +37,5 @@ jobs:
       - name: Import CICD
         shell: pwsh
         run: |
-          # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
-          # Invoke-Pester ./scripts.ps1 -Passthru
           ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}}
 
