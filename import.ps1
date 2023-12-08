@@ -37,18 +37,14 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
             Write-Host "Manifest successfully imported. Response: $($response | ConvertTo-Json)"
         } catch {
             Write-Host "Error occurred while making the API request: $_"
-            if ($_.Exception.Response) {
-                $errorResponse = $_.Exception.Response.GetResponseStream()
-                $reader = New-Object System.IO.StreamReader($errorResponse)
-                $reader.BaseStream.Position = 0
-                $reader.DiscardBufferedData()
-                $errorDetails = $reader.ReadToEnd()
+            if ($_.Exception.Response -ne $null) {
+                $errorResponse = $_.Exception.Response
+                $errorDetails = $errorResponse.Content.ReadAsStringAsync().Result
                 Write-Host "Error details: $errorDetails"
             }
             exit 1
         }
-
-    }
+           
     else {
         Write-Host "No zip file found with the name $manifestName"
     }
