@@ -47,7 +47,7 @@ jobs:
           $manifestNameValid = ![string]::IsNullOrEmpty($manifestName) -And ![string]::IsNullOrWhitespace($manifestName) -And $manifestName -ne "null"
 
           if( $Action -eq "Create" ){
-              if( ( $manifestNameValid ){
+              if( $manifestNameValid ){
                   Write-Host "Input is Valid"
               }
               else {
