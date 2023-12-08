@@ -6,8 +6,8 @@ Param (
 )
 
 # Convert the $accessToken value to bytes and then back to a string to remove invalid characters
-# $accessTokenBytes = [System.Text.Encoding]::UTF8.GetBytes($accessToken)
-# $accessToken = [System.Text.Encoding]::UTF8.GetString($accessTokenBytes)
+$accessTokenBytes = [System.Text.Encoding]::UTF8.GetBytes($accessToken)
+$accessToken = [System.Text.Encoding]::UTF8.GetString($accessTokenBytes)
 
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
@@ -22,14 +22,17 @@ Set-Location $manifestDirectory
 $currentdir = Get-Location
 $manifestNameFolder = "$currentdir"
 
-# https://www.workato.com/api/packages/import/#{_('data.lookup_table.f64a4d0d.entry.col3')}?restart_recipes=true
+# Install the PSWriteHTML module
+Install-Module -Name PSWriteHTML -Force -SkipPublisherCheck
+
+# Import the PSWriteHTML module
+Import-Module PSWriteHTML
 
 if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
     Set-Location $manifestNameFolder
     $zipFile = Get-ChildItem -Filter "$manifestName.zip"
 
     if ($zipFile) {
-        # Read the content of the zip file as bytes
         $zipContent = [IO.File]::ReadAllBytes($zipFile.FullName)
         $requestFile = @{
             file = $zipContent
@@ -43,7 +46,8 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
             $webHeaderCollection.Add($key, $headers[$key])
         }
 
-        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body ($requestFile | ConvertTo-Json) -ContentType "application/json"
+        $formData = ConvertTo-Formdata -Hashtable $requestFile
+        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body $formData -ContentType "multipart/form-data"
         Write-Host "manifestName $manifestName"
     }
     else {
