@@ -1,11 +1,13 @@
 
 # Input parameters
 Param (
-    [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
-    [Parameter(mandatory = $true)][string]$folderId, # To receive folderId  
-    [Parameter(mandatory = $true)][string]$manifestName # To receive manifest Name  
+    [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token  
+    [Parameter(mandatory = $true)][string]$manifestName, # To receive manifest Name
+    [Parameter(mandatory = $true)][string]$folderId # To receive folderId
 )
-Write-Host "running the script...!"
+Write-Host "manifestName:$manifestName"
+
+Write-Host "folderId:$folderId"
 
 $headers = @{Authorization = "Bearer $accessToken " }
 
@@ -16,7 +18,7 @@ Write-Host "manifestDirectory:$manifestDirectory"
 Write-Host "Start Import manifest for $manifestName "
 Set-Location $manifestDirectory
 $currentdir = Get-Location
-$manifestNameFolder = "$currentdir/$manifestName"
+$manifestNameFolder = "$currentdir"
 
 # https://www.workato.com/api/packages/import/#{_('data.lookup_table.f64a4d0d.entry.col3')}?restart_recipes=true
 
