@@ -8,7 +8,7 @@ Param (
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
 
-$headers = @{ "Authorization" = "Bearer $accessToken" }
+$headers = @{Authorization = "Bearer $accessToken" }
 
 $manifestDirectory = "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
@@ -18,24 +18,17 @@ Set-Location $manifestDirectory
 $currentdir = Get-Location
 $manifestNameFolder = "$currentdir"
 
+# https://www.workato.com/api/packages/import/#{_('data.lookup_table.f64a4d0d.entry.col3')}?restart_recipes=true
+
 if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
     Set-Location $manifestNameFolder
     $zipFile = Get-ChildItem -Filter "$manifestName.zip"
 
     if ($zipFile) {
-        $zipContent = [IO.File]::ReadAllBytes($zipFile.FullName)
-        $requestFile = @{
-            file = $zipContent
-            filename = $zipFile.Name
-        }
-
+        $zipContent = [Convert]::ToBase64String([IO.File]::ReadAllBytes($zipFile.FullName))
+        $requestFile = @{ file = $zipContent; filename = $zipFile.Name }
+        
         $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
-
-        $webHeaderCollection = New-Object 'System.Net.WebHeaderCollection'
-        foreach ($key in $headers.Keys) {
-            $webHeaderCollection.Add($key, $headers[$key])
-        }
-
         Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $headers -Body $requestFile -ContentType "multipart/form-data"
         Write-Host "manifestName $manifestName"
     }
