@@ -6,8 +6,8 @@ Param (
 )
 
 # Convert the $accessToken value to bytes and then back to a string to remove invalid characters
-$accessTokenBytes = [System.Text.Encoding]::UTF8.GetBytes($accessToken)
-$accessToken = [System.Text.Encoding]::UTF8.GetString($accessTokenBytes)
+# $accessTokenBytes = [System.Text.Encoding]::UTF8.GetBytes($accessToken)
+# $accessToken = [System.Text.Encoding]::UTF8.GetString($accessTokenBytes)
 
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
