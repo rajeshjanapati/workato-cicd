@@ -2,14 +2,15 @@ name: Import-ManiFest CICD
 on:
   workflow_dispatch:
     inputs:
-      manifest_Name:
-        type: string
-        required: true
-        description: Recipe folder Id to Import
       folder_Id:
         type: string
         required: true
+        description: Recipe folder Id to Import
+      manifest_Name:
+        type: string
+        required: true
         description: Manifest Name to Import
+        
         
 env:
   DEPLOYMENT_NAME: Import-ManiFest CICD
