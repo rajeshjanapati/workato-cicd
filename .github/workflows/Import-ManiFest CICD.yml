@@ -29,6 +29,6 @@ jobs:
       - name: Import CICD
         shell: pwsh
         run: |
-          Invoke-Pester ./scripts/import.ps1 -Passthru
-          # ./scripts/import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{env.manifest_name}}
+          # Invoke-Pester ./scripts/import.ps1 -Passthru
+          ./scripts/import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{env.manifest_name}}
 
