@@ -66,13 +66,16 @@ elseif ($action -eq "ImportAll") {
     $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
 
     Write-Host "Found ZIP file: $zipFile"
-    # Sample filename
-    $filename = $zipFile
+    # File path
+    $filePath = $zipFile
+    
+    # Extract the base name without extension
+    $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
+    
+    # Output the result
+    Write-Host "Base name without extension: $baseNameWithoutExtension"
 
-    # Extracting the word before ".zip"
-    $extractedWord = $filename -replace '\.zip$', ''
-
-    $manifestName_Success += $extractedWord
+    $manifestName_Success += $baseNameWithoutExtension
 
     # Upload the ZIP file content to Workato
     $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
@@ -82,7 +85,7 @@ elseif ($action -eq "ImportAll") {
       Invoke-RestMethod -Uri $uri -Method "POST" -Headers $headers -Body $fileContent -ContentType "application/zip"
       Write-Host "manifestName $($zipFile.BaseName)"
     } catch {
-      $manifestName_Failure += $extractedWord
+      $manifestName_Failure += $baseNameWithoutExtension
       Write-Host "Error uploading ZIP file $($zipFile.BaseName): $($_.Exception.Message)"
     }
   }
