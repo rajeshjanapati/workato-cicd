@@ -28,7 +28,7 @@ if ($zipFile) {
 
   # Upload the ZIP file content to Workato
   Write-Host "Uploading ZIP file content to $uri..."
-  $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
+  $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
   Write-Host "API:$uri"
 
   try {
