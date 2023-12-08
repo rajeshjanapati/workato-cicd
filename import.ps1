@@ -1,3 +1,5 @@
+Write-Host "running the script...!"
+
 # Input parameters
 Param (
     [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
@@ -8,6 +10,8 @@ Param (
 $headers = @{Authorization = "Bearer $accessToken " }
 
 $manifestDirectory = "cicd"
+
+Write-Host "manifestDirectory:$manifestDirectory"
 
 Write-Host "Start Import manifest for $manifestName "
 Set-Location $manifestDirectory
