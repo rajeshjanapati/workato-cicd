@@ -41,6 +41,3 @@ jobs:
           # Invoke-Pester ./scripts.ps1 -Passthru
           ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}}
 
-      - name: Create cicd branch if not exists
-        run: |
-          git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
