@@ -30,7 +30,7 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
 
         $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
 
-        $webHeaderCollection = New-Object 'System.Collections.Specialized.WebHeaderCollection'
+        $webHeaderCollection = New-Object 'System.Net.WebHeaderCollection'
         foreach ($key in $headers.Keys) {
             $webHeaderCollection.Add($key, $headers[$key])
         }
