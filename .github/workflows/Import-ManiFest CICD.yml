@@ -24,7 +24,6 @@ env:
   DEPLOYMENT_NAME: Import-ManiFest CICD
   ACTION_TYPE: ${{github.event.inputs.action-type}}
   folder_Id: ${{ github.event.inputs.folder_Id }}
-  manifest_name: ${{ github.event.inputs.manifest_name }}
   manifest_name: "${{github.event.inputs.manifest_Name == '' &&  'null' || github.event.inputs.manifest_Name}}"
   Workato_Token: ${{ secrets.PRODACCESSTOKEN }}
 
