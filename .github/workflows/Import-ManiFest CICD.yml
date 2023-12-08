@@ -31,5 +31,5 @@ jobs:
         run: |
           # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
           # Invoke-Pester ./scripts.ps1 -Passthru
-          ./scripts/import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId "${{env.folder_Id}}" -manifestName "${{ github.event.inputs.manifest_name }}"
+          ./scripts/import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{env.manifest_name}}
 
