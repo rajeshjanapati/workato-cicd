@@ -2,20 +2,30 @@ name: Import-ManiFest CICD
 on:
   workflow_dispatch:
     inputs:
+      action-type:
+        type: choice
+        required: true
+        description: Action To Perform
+        default: "Create"
+        options:
+          - ImportAll
+          - Create
       folder_Id:
         type: string
         required: true
         description: Recipe folder Id to Import
       manifest_Name:
         type: string
-        required: true
+        required: false
         description: Manifest Name to Import
         
         
 env:
   DEPLOYMENT_NAME: Import-ManiFest CICD
+  ACTION_TYPE: ${{github.event.inputs.action-type}}
   folder_Id: ${{ github.event.inputs.folder_Id }}
   manifest_name: ${{ github.event.inputs.manifest_name }}
+  manifest_name: "${{github.event.inputs.manifest_Name == '' &&  'null' || github.event.inputs.manifest_Name}}"
   Workato_Token: ${{ secrets.PRODACCESSTOKEN }}
 
 jobs:
@@ -28,8 +38,26 @@ jobs:
       id-token: 'write'
 
     steps:
-      - name: Check out Git repository code
-        uses: actions/checkout@v3
+      - id: "input-validation"
+        name: Validate Input
+        shell: pwsh
+        run: |
+          $Action="${{ env.ACTION_TYPE }}"
+          $manifestName="${{ env.manifest_name }}"
+
+          $manifestNameValid = ![string]::IsNullOrEmpty($manifestName) -And ![string]::IsNullOrWhitespace($manifestName) -And $manifestName -ne "null"
+
+          if( $Action -eq "Create" ){
+              if( ( $manifestNameValid ){
+                  Write-Host "Input is Valid"
+              }
+              else {
+                  Write-Error "For Create manifest Name is required"
+              }
+          }
+
+      - name: Full Code Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: "${{ secrets.GITHUBTOKEN }}"
@@ -37,5 +65,5 @@ jobs:
       - name: Import CICD
         shell: pwsh
         run: |
-          ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}}
+          ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}} -action ${{env.ACTION_TYPE}}
 
