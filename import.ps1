@@ -16,7 +16,6 @@ $headers = @{ 'Authorization' = "Bearer $accessToken" }
 
 # Rest of your script remains unchanged
 
-
 $manifestDirectory = "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
 
@@ -32,8 +31,12 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
     $zipFile = Get-ChildItem -Filter "$manifestName.zip"
 
     if ($zipFile) {
-        $zipContent = [Convert]::ToBase64String([IO.File]::ReadAllBytes($zipFile.FullName))
-        $requestFile = @{ file = $zipContent; filename = $zipFile.Name }
+        # Read the content of the zip file as bytes
+        $zipContent = [IO.File]::ReadAllBytes($zipFile.FullName)
+        $requestFile = @{
+            file = [System.IO.MemoryStream]::new($zipContent)
+            filename = $zipFile.Name
+        }
 
         $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
 
