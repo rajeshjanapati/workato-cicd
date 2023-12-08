@@ -5,10 +5,6 @@ Param (
     [Parameter(mandatory = $true)][string]$folderId # To receive folderId
 )
 
-# Convert the $accessToken value to bytes and then back to a string to remove invalid characters
-$accessTokenBytes = [System.Text.Encoding]::UTF8.GetBytes($accessToken)
-$accessToken = [System.Text.Encoding]::UTF8.GetString($accessTokenBytes)
-
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
 
@@ -21,12 +17,6 @@ Write-Host "Start Import manifest for $manifestName "
 Set-Location $manifestDirectory
 $currentdir = Get-Location
 $manifestNameFolder = "$currentdir"
-
-# Install the PSWriteHTML module
-Install-Module -Name PSWriteHTML -Force -SkipPublisherCheck
-
-# Import the PSWriteHTML module
-Import-Module PSWriteHTML
 
 if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
     Set-Location $manifestNameFolder
@@ -46,8 +36,7 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
             $webHeaderCollection.Add($key, $headers[$key])
         }
 
-        $formData = ConvertTo-Formdata -Hashtable $requestFile
-        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body $formData -ContentType "multipart/form-data"
+        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body $requestFile -ContentType "multipart/form-data"
         Write-Host "manifestName $manifestName"
     }
     else {
