@@ -29,5 +29,5 @@ jobs:
       - name: Import CICD
         shell: pwsh
         run: |
-          ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{env.manifest_name}}
+          ./scripts/import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{env.manifest_name}}
 
