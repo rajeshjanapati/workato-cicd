@@ -8,7 +8,7 @@ Param (
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
 
-$headers = @{ 'Authorization' = "Bearer $accessToken" }
+$headers = @{ "Authorization" = "Bearer $accessToken" }
 
 $manifestDirectory = "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
@@ -36,7 +36,7 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
             $webHeaderCollection.Add($key, $headers[$key])
         }
 
-        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $webHeaderCollection -Body $requestFile -ContentType "multipart/form-data"
+        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $headers -Body $requestFile -ContentType "multipart/form-data"
         Write-Host "manifestName $manifestName"
     }
     else {
