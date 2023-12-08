@@ -14,7 +14,6 @@ $currentdir = Get-Location
 $manifestNameFolder = "$currentdir"
 Set-Location $manifestNameFolder
 
-$uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
 
 # Check if the ZIP file exists in the current directory
 $zipFile = Get-ChildItem -Filter "$manifestName.zip"
@@ -22,13 +21,15 @@ Write-Host "FileName:$zipFile"
 
 if ($zipFile) {
   # Read the ZIP file as byte array
-  $fileContent = [System.IO.File]::ReadAllBytes($zipFile.FullName)
+  $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
 
   Write-Host "Found ZIP file: $zipFile.FullName"
   Write-Host "Start Import manifest for $manifestName"
 
   # Upload the ZIP file content to Workato
   Write-Host "Uploading ZIP file content to $uri..."
+  $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
+  Write-Host "API:$uri"
 
   try {
     Invoke-RestMethod -Uri $uri -Method "POST" -Headers $headers -Body $fileContent -ContentType "application/zip"
