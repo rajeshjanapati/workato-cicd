@@ -31,4 +31,4 @@ jobs:
       run: |
         # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
         # Invoke-Pester ./scripts.ps1 -Passthru
-        ./scripts.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}}
+        ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}}
