@@ -44,6 +44,8 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
             }
             exit 1
         }
+        }
+        
            
     else {
         Write-Host "No zip file found with the name $manifestName"
