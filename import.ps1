@@ -5,6 +5,9 @@ Param (
     [Parameter(mandatory = $true)][string]$folderId # To receive folderId
 )
 
+# Trim the value to remove any leading or trailing spaces
+$accessToken = $accessToken.Trim()
+
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
 
