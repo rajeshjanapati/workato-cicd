@@ -7,6 +7,13 @@ Param (
 
 $headers = @{ 'Authorization' = "Bearer $accessToken" }
 
+$manifestDirectory = "cicd"
+Write-Host "manifestDirectory:$manifestDirectory"
+Set-Location $manifestDirectory
+$currentdir = Get-Location
+$manifestNameFolder = "$currentdir"
+Set-Location $manifestNameFolder
+
 $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
 
 # Check if the ZIP file exists in the current directory
@@ -31,7 +38,7 @@ if ($zipFile) {
     Write-Host "Error uploading ZIP file: $($_.Exception.Message)"
   }
 } else {
-  Write-Host "No ZIP file found with the name $zipFileName"
+  Write-Host "No ZIP file found with the name $manifestName"
 }
 
 
