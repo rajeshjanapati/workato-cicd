@@ -2,18 +2,18 @@ name: Import-ManiFest CICD
 on:
   workflow_dispatch:
     inputs:
-      folder_Id:
+      folder-Id:
         type: string
         required: true
         description: Recipe folder Id to Import
-      manifest_name:
+      manifest-name:
         type: string
         required: true
         description: Manifest Name to Import
 env:
-  DEPLOYMENT_NAME: Export-ManiFest CICD
-  folder_Id: ${{ github.event.inputs.folder_Id }}
-  manifest_name: ${{ github.event.inputs.manifest_name }}
+  DEPLOYMENT_NAME: Import-ManiFest CICD
+  folder_Id: ${{ github.event.inputs.folder-Id }}
+  manifest_name: ${{ github.event.inputs.manifest-name }}
   Workato_Token: ${{ secrets.PRODACCESSTOKEN }}
 
 jobs:
@@ -29,7 +29,5 @@ jobs:
       - name: Import CICD
         shell: pwsh
         run: |
-          # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
-          # Invoke-Pester ./scripts.ps1 -Passthru
-          ./scripts.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{ github.event.inputs.manifest_name }}
+          ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -folderId ${{env.folder_Id}} -manifestName ${{env.manifest_name}}
 
