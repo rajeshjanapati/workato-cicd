@@ -24,6 +24,7 @@ env:
   DEPLOYMENT_NAME: Import-ManiFest CICD
   ACTION_TYPE: ${{github.event.inputs.action-type}}
   folder_Id: ${{ github.event.inputs.folder_Id }}
+  manifest_name: ${{ github.event.inputs.manifest_name }}
   manifest_name: "${{github.event.inputs.manifest_Name == '' &&  'null' || github.event.inputs.manifest_Name}}"
   Workato_Token: ${{ secrets.PRODACCESSTOKEN }}
 
@@ -47,13 +48,24 @@ jobs:
           $manifestNameValid = ![string]::IsNullOrEmpty($manifestName) -And ![string]::IsNullOrWhitespace($manifestName) -And $manifestName -ne "null"
 
           if( $Action -eq "Create" ){
-              if( $manifestNameValid ){
+              if( ( $manifestNameValid ){
                   Write-Host "Input is Valid"
               }
               else {
                   Write-Error "For Create manifest Name is required"
               }
           }
+
+      - name: Set TIMESTAMP
+        id: set_timestamp
+        run: |
+          echo "TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S %Z")" >> $GITHUB_ENV
+
+      - name: Set Summary File Name
+        id: set_summary_file
+        run: |
+          TIMESTAMP=$TIMESTAMP
+          echo "summary_file_name=summary_$(date -u -d "$TIMESTAMP" +"%Y-%m-%d_%H_%M_%S").txt" >> $GITHUB_ENV
 
       - name: Full Code Checkout
         uses: actions/checkout@v4
@@ -64,5 +76,22 @@ jobs:
       - name: Import CICD
         shell: pwsh
         run: |
-          ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}} -action ${{env.ACTION_TYPE}}
+          ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}} -action ${{env.ACTION_TYPE}} -summary_file_name $env:summary_file_name
 
+      - name: Append additional Log lines to Summary File
+        run: |
+          SUMMARY_FILE="cicd/${{ env.summary_file_name }}"
+
+          # Append log lines to the summary file
+          echo "Workflow Executed at: ${{ env.TIMESTAMP }}" >> "$SUMMARY_FILE"
+          echo "Job Status: ${{ job.status }}" >> "$SUMMARY_FILE"
+          echo "Triggered by: ${{ github.actor }}" >> "$SUMMARY_FILE"
+
+      - name: Upload Summary Log File in to Git
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.summary_file_name }}
+          path: cicd/${{ env.summary_file_name }}
+
+      - name: Remove Summary Log File from Git Repository
+        run: rm cicd/${{ env.summary_file_name }}
