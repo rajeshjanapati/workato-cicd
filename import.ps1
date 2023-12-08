@@ -8,7 +8,7 @@ Param (
 Write-Host "manifestName:$manifestName"
 Write-Host "folderId:$folderId"
 
-$headers = @{Authorization = "Bearer $accessToken" }
+$headers = @{ Authorization = "Bearer $accessToken" }
 
 $manifestDirectory = "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
@@ -25,11 +25,13 @@ if ($manifestName -ne 'null' -AND (Test-Path $manifestNameFolder)) {
     $zipFile = Get-ChildItem -Filter "$manifestName.zip"
 
     if ($zipFile) {
-        $zipContent = [Convert]::ToBase64String([IO.File]::ReadAllBytes($zipFile.FullName))
-        $requestFile = @{ file = $zipContent; filename = $zipFile.Name }
+        $zipContent = [IO.File]::ReadAllBytes($zipFile.FullName)
         
+        $webClient = New-Object System.Net.WebClient
+        $webClient.Headers.Add("Authorization", "Bearer $accessToken")
         $uri = "https://www.workato.com/api/packages/import/$folderId?restart_recipes=true"
-        Invoke-RestMethod -Uri $uri -Method 'POST' -Headers $headers -Body $requestFile -ContentType "multipart/form-data"
+        $response = $webClient.UploadData($uri, "POST", $zipContent)
+        
         Write-Host "manifestName $manifestName"
     }
     else {
