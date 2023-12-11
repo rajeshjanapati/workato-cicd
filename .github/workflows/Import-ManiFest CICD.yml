@@ -75,7 +75,7 @@ jobs:
       - name: Import CICD
         shell: pwsh
         run: |
-          ./import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}} -action ${{env.ACTION_TYPE}} -summary_file_name $env:summary_file_name
+          ./scripts/import.ps1 -accessToken "${{ secrets.PRODACCESSTOKEN }}" -manifestName ${{env.manifest_name}} -folderId ${{env.folder_Id}} -action ${{env.ACTION_TYPE}} -summary_file_name $env:summary_file_name
 
       - name: Append additional Log lines to Summary File
         run: |
