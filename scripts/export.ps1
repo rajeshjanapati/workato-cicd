@@ -78,7 +78,7 @@ try {
                     Write-Host "Base name without extension: $baseNameWithoutExtension"
 
                     try {
-                        $manifestName_Success += $manifestName
+                        $manifestName_Success += $baseNameWithoutExtension
                         # Download the file
                         Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
 
