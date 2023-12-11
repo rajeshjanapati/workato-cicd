@@ -53,7 +53,7 @@ try {
             if ($downloadURLresponse) {
                 # Set-Location "cicd"
                 $currentdir = Get-Location
-                Write-Host "currentdir:$currentdir"
+                # Write-Host "currentdir:$currentdir"
 
                 # Access the "download_url" property directly
                 $downloadURL = $downloadURLresponse.download_url
@@ -66,16 +66,13 @@ try {
                     # Set the path where you want to save the file (inside the cicd folder)
                     $savePath = Join-Path $currentdir "$fileName.zip"
 
-                    Write-Host "Downloading file to: $savePath"
+                    # Write-Host "Downloading file to: $savePath"
 
                     # File path
                     $filePath = $savePath
 
                     # Extract the base name without extension
                     $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
-
-                    # Output the result
-                    Write-Host "Base name without extension: $baseNameWithoutExtension"
 
                     try {
                         $manifestName_Success += $baseNameWithoutExtension
@@ -128,3 +125,4 @@ $filePath = Join-Path $currentdir $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+
