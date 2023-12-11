@@ -69,7 +69,7 @@ try {
                     Write-Host "Downloading file to: $savePath"
 
                     # File path
-                    $filePath = "/home/runner/work/workato-cicd/workato-cicd/cicd/opa_rajesh-kumar-janapati.zip"
+                    $filePath = $savePath
 
                     # Extract the base name without extension
                     $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
@@ -85,6 +85,7 @@ try {
                         Write-Host "File downloaded successfully!"
                     }
                     catch {
+                        $manifestName_Failure += $baseNameWithoutExtension
                         Write-Host "API Request Failed. Error: $_"
                         Write-Host "Response Content: $_.Exception.Response.Content"
                     }
@@ -105,5 +106,25 @@ catch {
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
+
+$manifestNameList_Success =  $($manifestName_Success -join ', ')
+$manifestNameList_Failed =  $($manifestName_Failure -join ', ')
+
+$manifestNameCountIn_Success = $manifestName_Success.Count
+$manifestNameCountIn_Failed = $manifestName_Failure.Count
+
+$manifestName_Log_Success = ("manifest Recipe Exported Successfully to GitHub: Count - $manifestNameCountIn_Success, Manifest Names - $manifestNameList_Success`r`n")
+$manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNameCountIn_Failed, Manifest Names - $manifestNameList_Failed`r`n")
+
+$allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
+
 cd ..
 
+$currentdir = Get-Location
+Write-Host "currentdir:$currentdir"
+
+# Combine the current directory path with the file name
+$filePath = $currentdir
+
+# Write the combined summaries to the summary file
+$allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
