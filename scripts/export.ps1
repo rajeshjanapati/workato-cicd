@@ -68,17 +68,14 @@ try {
                     
                     Write-Host "Downloading file to: $savePath"
 
-                    # File path
-                    # $filePath = $savePath
+                    File path
+                    $filePath1 = $savePath
 
                     # Extract the base name without extension
-                    $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($savePath)
+                    $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath1)
 
                     # Output the result
                     Write-Host "Base name without extension: $baseNameWithoutExtension"
-
-                    # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $PSScriptRoot "cicd\$fileName.zip"
 
                     try {
                         # Download the file
