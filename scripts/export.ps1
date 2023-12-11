@@ -68,24 +68,24 @@ try {
                     
                     Write-Host "Downloading file to: $savePath"
 
-                    File path
-                    $filePath1 = $savePath
+                    # File path
+                    # $filePath1 = $savePath
 
-                    # Extract the base name without extension
-                    $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath1)
+                    # # Extract the base name without extension
+                    # $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath1)
 
-                    # Output the result
-                    Write-Host "Base name without extension: $baseNameWithoutExtension"
+                    # # Output the result
+                    # Write-Host "Base name without extension: $baseNameWithoutExtension"
 
                     try {
                         # Download the file
                         Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
                         
                         Write-Host "File downloaded successfully!"
-                        $manifestName_Success += $baseNameWithoutExtension
+                        # $manifestName_Success += $baseNameWithoutExtension
                     }
                     catch {
-                        $manifestName_Failure += $baseNameWithoutExtension
+                        # $manifestName_Failure += $baseNameWithoutExtension
                         Write-Host "API Request Failed. Error: $_"
                         Write-Host "Response Content: $_.Exception.Response.Content"
                     }
