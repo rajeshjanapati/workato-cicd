@@ -1,7 +1,8 @@
 # Input parameters
 Param (
     [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
-    [Parameter(mandatory = $true)][string]$manifestId # To receive manifest_ID      
+    [Parameter(mandatory = $true)][string]$manifestId, # To receive manifest_ID    
+    [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
 $headers = @{ Authorization = "Bearer $accessToken" }
