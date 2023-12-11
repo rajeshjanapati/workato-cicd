@@ -49,7 +49,7 @@ jobs:
 
       - name: Append additional Log lines to Summary File
         run: |
-          SUMMARY_FILE="cicd/${{ env.summary_file_name }}"
+          SUMMARY_FILE="${{ env.summary_file_name }}"
 
           # Append log lines to the summary file
           echo "Workflow Executed at: ${{ env.TIMESTAMP }}" >> "$SUMMARY_FILE"
@@ -60,10 +60,10 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ env.summary_file_name }}
-          path: cicd/${{ env.summary_file_name }}
+          path: ${{ env.summary_file_name }}
 
       - name: Remove Summary Log File from Git Repository
-        run: rm cicd/${{ env.summary_file_name }}
+        run: rm ${{ env.summary_file_name }}
       
       - name: Create cicd branch if not exists
         run: |
