@@ -58,13 +58,17 @@ try {
                 
                 # Check if download_url is obtained
                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
-                    # Write-Host "Download URL obtained: $downloadURL"
+                    cd ..
+
+                    # Set-Location $cicdPath
+                    # $currentdir = Get-Location
+
 
                     # Extract file name from the URL without query parameters
                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
                     
                     # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $PSScriptRoot "$fileName.zip"
+                    $savePath = Join-Path $PSScriptRoot "$cicdPath/$fileName.zip"
                     
                     Write-Host "Downloading file to: $savePath"
 
