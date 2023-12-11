@@ -77,6 +77,9 @@ try {
                     # Output the result
                     Write-Host "Base name without extension: $baseNameWithoutExtension"
 
+                    # Set the path where you want to save the file (inside the cicd folder)
+                    $savePath = Join-Path $PSScriptRoot "cicd\$fileName.zip"
+
                     try {
                         # Download the file
                         Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
@@ -115,13 +118,13 @@ catch {
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
-cd ..
 # $manifestDirectory = "cicd"
 # Set-Location $manifestDirectory
 
 # Combine the current directory path with the file name
-$filePath = $summary_file_name
+$filePath = $cicdPath
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
 
+cd ..
