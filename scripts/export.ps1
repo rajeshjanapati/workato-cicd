@@ -18,8 +18,15 @@ if (!(Test-Path -PathType Container cicd)) {
     Write-Host "Inside else: Moved to $cicdPath"
 }
 
+# Initialize an empty string to store all environment summaries
+$allSummaries_Log = ""
 
-# Rest of your script...
+# Initialize an array to store proxy names
+$manifestName_Success = @()
+$manifestName_Failure = @()
+$manifestNameCountIn_Success = 0
+$manifestNameCountIn_Failed = 0
+
 
 # Initial API request to get the ID
 $idPath = "https://www.workato.com/api/packages/export/$manifestId"
@@ -61,10 +68,26 @@ try {
 
                     Write-Host "Downloading file to: $savePath"
 
-                    # Download the file
-                    Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
+                    # File path
+                    $filePath = "/home/runner/work/workato-cicd/workato-cicd/cicd/opa_rajesh-kumar-janapati.zip"
 
-                    Write-Host "File downloaded successfully!"
+                    # Extract the base name without extension
+                    $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
+
+                    # Output the result
+                    Write-Host "Base name without extension: $baseNameWithoutExtension"
+
+                    try {
+                        $manifestName_Success += $manifestName
+                        # Download the file
+                        Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
+
+                        Write-Host "File downloaded successfully!"
+                    }
+                    catch {
+                        Write-Host "API Request Failed. Error: $_"
+                        Write-Host "Response Content: $_.Exception.Response.Content"
+                    }
 
                 }
             } else {
@@ -83,7 +106,4 @@ catch {
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
 cd ..
-
-# Rest of your script...
-
 
