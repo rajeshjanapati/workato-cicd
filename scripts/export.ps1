@@ -58,7 +58,7 @@ try {
                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
                     
                     # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $PSScriptRoot "cicd\$fileName.zip"
+                    $savePath = Join-Path $PSScriptRoot "$fileName.zip"
                     
                     Write-Host "Downloading file to: $savePath"
                     
