@@ -44,8 +44,9 @@ try {
             $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
         
             if ($downloadURLresponse) {
-                Set-Location "cicd"
+                # Set-Location "cicd"
                 $currentdir = Get-Location
+                Write-Host "currentdir:$currentdir"
 
                 # Access the "download_url" property directly
                 $downloadURL = $downloadURLresponse.download_url
