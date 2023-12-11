@@ -124,7 +124,7 @@ $currentdir = Get-Location
 Write-Host "currentdir:$currentdir"
 
 # Combine the current directory path with the file name
-$filePath = $currentdir
+$filePath = Join-Path $currentdir $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
