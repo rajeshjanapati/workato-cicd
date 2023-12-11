@@ -115,11 +115,11 @@ catch {
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
-$manifestDirectory = "cicd"
-Set-Location $manifestDirectory
+# $manifestDirectory = "cicd"
+# Set-Location $manifestDirectory
 
 # Combine the current directory path with the file name
-$filePath = $manifestDirectory
+$filePath = $cicdPath
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
