@@ -69,10 +69,10 @@ try {
                     Write-Host "Downloading file to: $savePath"
 
                     # File path
-                    $filePath = $savePath
+                    # $filePath = $savePath
 
                     # Extract the base name without extension
-                    $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
+                    $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($savePath)
 
                     # Output the result
                     Write-Host "Base name without extension: $baseNameWithoutExtension"
