@@ -34,9 +34,7 @@ jobs:
       - name: Export CICD
         shell: pwsh
         run: |
-          # $env:access_token = "${{ secrets.WORKATOTOKEN }}"
-          # Invoke-Pester ./scripts.ps1 -Passthru
-          ./scripts.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}}
+          ./scripts/export.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}}
 
       - name: Create cicd branch if not exists
         run: |
