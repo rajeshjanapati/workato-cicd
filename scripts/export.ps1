@@ -58,10 +58,14 @@ try {
                 
                 # Check if download_url is obtained
                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
+                    # Set-Location $cicdPath
+                    $currentdir = Get-Location
+                    Write-Host "currentdir1:$currentdir"
                     cd ..
 
                     # Set-Location $cicdPath
-                    # $currentdir = Get-Location
+                    $currentdir = Get-Location
+                    Write-Host "currentdir2:$currentdir"
 
 
                     # Extract file name from the URL without query parameters
