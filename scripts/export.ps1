@@ -1,20 +1,10 @@
 # Input parameters
 Param (
     [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
-    [Parameter(mandatory = $true)][string]$manifestId, # To receive manifest_ID  
-    [Parameter(mandatory = $true)][string]$summary_file_name    
+    [Parameter(mandatory = $true)][string]$manifestId # To receive manifest_ID      
 )
 
 $headers = @{ Authorization = "Bearer $accessToken" }
-
-# Initialize an empty string to store all environment summaries
-$allSummaries_Log = ""
-
-# Initialize an array to store proxy names
-$manifestName_Success = @()
-$manifestName_Failure = @()
-$manifestNameCountIn_Success = 0
-$manifestNameCountIn_Failed = 0
 
 # create cicd folder if not exists
 $cicdPath = "cicd"
@@ -58,40 +48,20 @@ try {
                 
                 # Check if download_url is obtained
                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
-                    # Set-Location $cicdPath
-                    $currentdir = Get-Location
-                    Write-Host "currentdir1:$currentdir"
-                    
+                    # Write-Host "Download URL obtained: $downloadURL"
 
                     # Extract file name from the URL without query parameters
                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
                     
                     # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $PSScriptRoot "$currentdir/$fileName.zip"
+                    $savePath = Join-Path $PSScriptRoot "cicd\$fileName.zip"
                     
                     Write-Host "Downloading file to: $savePath"
-
-                    # File path
-                    # $filePath1 = $savePath
-
-                    # # Extract the base name without extension
-                    # $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath1)
-
-                    # # Output the result
-                    # Write-Host "Base name without extension: $baseNameWithoutExtension"
-
-                    try {
-                        # Download the file
-                        Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
-                        
-                        Write-Host "File downloaded successfully!"
-                        # $manifestName_Success += $baseNameWithoutExtension
-                    }
-                    catch {
-                        # $manifestName_Failure += $baseNameWithoutExtension
-                        Write-Host "API Request Failed. Error: $_"
-                        Write-Host "Response Content: $_.Exception.Response.Content"
-                    }
+                    
+                    # Download the file
+                    Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
+                    
+                    Write-Host "File downloaded successfully!"
                 }
             } else {
                 Write-Host "API Request Successful but response content is empty."
@@ -103,28 +73,13 @@ try {
     } else {
         Write-Host "API Request Successful but response content is empty."
     }
-    $manifestNameList_Success =  $($manifestName_Success -join ', ')
-    $manifestNameList_Failed =  $($manifestName_Failure -join ', ')
-
-    $manifestNameCountIn_Success = $manifestName_Success.Count
-    $manifestNameCountIn_Failed = $manifestName_Failure.Count
-
-    $manifestName_Log_Success = ("manifest Recipe Exported Successfully to GitHub: Count - $manifestNameCountIn_Success, Manifest Names - $manifestNameList_Success`r`n")
-    $manifestName_Log_Failed = ("manifest Recipe Export Failed to GitHub: Count - $manifestNameCountIn_Failed, Manifest Names - $manifestNameList_Failed`r`n")
-
-    $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
 }
 catch {
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
-# $manifestDirectory = "cicd"
-# Set-Location $manifestDirectory
-
-# # Combine the current directory path with the file name
-# $filePath = $cicdPath
-
-# Write the combined summaries to the summary file
-$allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
-
 cd ..
+
+# Rest of your script...
+
+
