@@ -44,6 +44,7 @@ try {
             $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
         
             if ($downloadURLresponse) {
+                cd ..
                 # Access the "download_url" property directly
                 $downloadURL = $downloadURLresponse.download_url
                 
