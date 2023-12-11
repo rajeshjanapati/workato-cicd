@@ -122,8 +122,8 @@ catch {
 # $manifestDirectory = "cicd"
 # Set-Location $manifestDirectory
 
-# Combine the current directory path with the file name
-$filePath = $cicdPath
+# # Combine the current directory path with the file name
+# $filePath = $cicdPath
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
