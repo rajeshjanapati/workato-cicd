@@ -1,7 +1,7 @@
 # Function for sending notifications
 function Post-MessagesToTeams {
     param (
-        $title, $summary, $workflowName, $runId, $runNumber, $orgName, $executionTimestamp, $triggeredByName, $eventType, $gitBranch, $jobStatus, $artifactLink, $teamsWebhookURL, $messageColor, $themeColor
+        $title, $summary, $workflowName, $runId, $runNumber, $executionTimestamp, $triggeredByName, $eventType, $gitBranch, $jobStatus, $artifactLink, $teamsWebhookURL, $messageColor, $themeColor
     )
     
     # Determine the notification parameters based on the job status
