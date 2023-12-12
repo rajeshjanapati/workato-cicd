@@ -36,7 +36,7 @@ function Post-MessagesToTeams {
     $JSON = @{
         title = $TITLE
         summary = $SUMMARY
-        text = "Workflow Name: $workflowName<br>Run ID: $runId<br>Run Number: $runNumber<br>Timestamp: $executionTimestamp<br>Triggered by: <b> $triggeredByName </b><br>EventType: $eventType <br>Branch: $gitBranch<br> Status: <font color='$MESSAGE_COLOR'><b>$jobStatus</b></font><br>Artifact Link: $artifactLink"
+        text = "Workflow Name: <b> $workflowName </b><br>Run ID: $runId<br>Run Number: $runNumber<br>Timestamp: $executionTimestamp<br>Triggered by: <b> $triggeredByName </b><br>EventType: $eventType <br>Branch: $gitBranch<br> Status: <font color='$MESSAGE_COLOR'><b>$jobStatus</b></font><br>Artifact Link: $artifactLink"
         themeColor = $THEME_COLOR
     } | ConvertTo-Json
 
