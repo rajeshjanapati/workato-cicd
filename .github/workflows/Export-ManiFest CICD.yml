@@ -14,6 +14,7 @@ env:
   manifest_id: ${{ github.event.inputs.manifest_Id }}
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+  TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
 
 jobs:
   Workato-CICD:
@@ -93,3 +94,29 @@ jobs:
             echo "Local branch is up to date with Remote branch. No changes to push."
             exit 0
           fi
+          
+      - name: Send Notification to Teams
+        if: ${{ always() }}
+        shell: pwsh
+        run: |   
+          
+          $TIMESTAMP="${{ env.TIMESTAMP }}"
+          $TEAMS_WEBHOOK_URL="${{ secrets.TEAMS_WEBHOOK_URL }}"
+          $WORKFLOW_NAME="${{ github.workflow }}"
+          $RUN_ID="${{ github.run_id }}"
+          $RUN_NUMBER="${{ github.run_number }}"
+          $GIT_BRANCH="${{ github.ref }}"
+          $JOB_STATUS="${{ job.status }}"
+          $EVENT_TYPE="${{ github.event_name }}"
+          if( $EVENT_TYPE -eq "schedule" ) {
+                  $TRIGGER_BY_NAME="Scheduler"
+          }
+          else {
+                  $TRIGGER_BY_NAME="${{ github.actor }}"
+          }
+          $ARTIFACT_LINK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          
+          # Call the function from utilities.ps1 script
+          . ./scripts/utilities.ps1
+          Post-MessagesToTeams -title "$TITLE" -summary "$SUMMARY" -workflowName "$WORKFLOW_NAME" -runId "$RUN_ID" -runNumber "$RUN_NUMBER" -executionTimestamp "$TIMESTAMP" -triggeredByName "$TRIGGER_BY_NAME" -EventType "$EVENT_TYPE" -gitBranch "$GIT_BRANCH" -jobStatus "$JOB_STATUS" -messageColor "$MESSAGE_COLOR" -themeColor "$THEME_COLOR" -artifactLink "$ARTIFACT_LINK" 
+      
