@@ -27,7 +27,6 @@ $manifestName_Failure = @()
 $manifestNameCountIn_Success = 0
 $manifestNameCountIn_Failed = 0
 
-
 # Initial API request to get the ID
 $idPath = "https://www.workato.com/api/packages/export/$manifestId"
 
@@ -47,18 +46,13 @@ try {
         do {
             $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
             Write-Host "downloadURLpath: $downloadURLpath"
-        
-            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
-        
-            if ($downloadURLresponse) {
-                # Set-Location "cicd"
-                $currentdir = Get-Location
-                # Write-Host "currentdir:$currentdir"
 
-                # Access the "download_url" property directly
+            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
+
+            if ($downloadURLresponse) {
+                $currentdir = Get-Location
                 $downloadURL = $downloadURLresponse.download_url
-                
-                # Check if download_url is obtained
+
                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
                     # Extract file name from the URL without query parameters
                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
@@ -66,32 +60,29 @@ try {
                     # Set the path where you want to save the file (inside the cicd folder)
                     $savePath = Join-Path $currentdir "$fileName.zip"
 
-                    # Write-Host "Downloading file to: $savePath"
-
-                    # File path
-                    $filePath = $savePath
-
-                    # Extract the base name without extension
-                    $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
+                    # Check if the file already exists, and delete it if it does
+                    if (Test-Path $savePath) {
+                        Remove-Item $savePath -Force
+                        Write-Host "Deleted existing file: $savePath"
+                    }
 
                     try {
-                        $manifestName_Success += $baseNameWithoutExtension
+                        $manifestName_Success += $fileName
                         # Download the file
                         Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
 
                         Write-Host "File downloaded successfully!"
                     }
                     catch {
-                        $manifestName_Failure += $baseNameWithoutExtension
+                        $manifestName_Failure += $fileName
                         Write-Host "API Request Failed. Error: $_"
                         Write-Host "Response Content: $_.Exception.Response.Content"
                     }
-
                 }
             } else {
                 Write-Host "API Request Successful but response content is empty."
             }
-        
+
             # Delay before making the next request (optional)
             Start-Sleep -Seconds 5
         } while ($downloadURL -eq $null -or $downloadURL -eq "null")
@@ -125,4 +116,3 @@ $filePath = Join-Path $currentdir $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
-
