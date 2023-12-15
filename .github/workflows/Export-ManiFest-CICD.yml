@@ -67,13 +67,19 @@ jobs:
       - name: Remove Summary Log File from Git Repository
         run: rm ${{ env.summary_file_name }}
 
-      - name: Commit and Push Changes
+      - name: Add local files to Git local branch
         run: |
           git config --global user.email "rajeshjanapati@gmail.com"
           git config --global user.name "rajeshjanapati"
           git add .
-          git commit -m "Commit message"
-          git push origin HEAD:main
+
+          # Check for delta changes before committing
+          if git diff --quiet; then
+            echo "No changes to commit. Skipping commit."
+          else
+            git commit -m "cicd update"
+            git push origin HEAD:main
+          fi
 
       - name: Send Notification to Teams
         if: ${{ always() }}
