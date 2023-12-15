@@ -49,7 +49,7 @@ jobs:
 
       - name: Run Workflow
         run: |
-          echo "Manifest ID: ${{ github.event.inputs.manifest_Id }}"
+          echo "Manifest ID: ${{ github.event.client_payload.manifest_Id }}"
 
       - name: Debug Payload
         run: |
@@ -59,7 +59,7 @@ jobs:
       - name: Export CICD
         shell: pwsh
         run: |
-          ./scripts/export.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{ github.event.inputs.manifest_Id }} -summary_file_name $env:summary_file_name
+          ./scripts/export.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{ github.event.client_payload.manifest_Id }} -summary_file_name $env:summary_file_name
 
       - name: Append additional Log lines to Summary File
         run: |
