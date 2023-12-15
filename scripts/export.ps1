@@ -17,12 +17,6 @@ if (!(Test-Path -PathType Container $cicdPath)) {
     cd $cicdPath
     Write-Host "Inside if: Created and moved to $cicdPath"
 } else {
-    # Remove the directory and its contents if it exists
-    Remove-Item -Path $cicdPath -Recurse
-    
-    # Introduce a 2-second delay
-    Start-Sleep -Seconds 2
-    mkdir $cicdPath
     cd $cicdPath
 }
 
