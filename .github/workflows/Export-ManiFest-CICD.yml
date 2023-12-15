@@ -1,7 +1,7 @@
 name: Export-ManiFest CICD
 on:
   repository_dispatch:
-    types: [your_custom_event]
+    types: [workato]
     inputs:
       manifest_Id:
         type: string
