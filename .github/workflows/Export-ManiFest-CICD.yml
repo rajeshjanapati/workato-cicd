@@ -47,10 +47,18 @@ jobs:
           fetch-depth: 0
           token: "${{ secrets.GITHUBTOKEN }}"
 
+      - name: Run Workflow
+        run: |
+          echo "Manifest ID: ${{ github.event.inputs.manifest_Id }}"
+
+      - name: Debug Payload
+        run: |
+          echo "Event Payload: ${{ toJson(github.event) }}"
+
       - name: Export CICD
         shell: pwsh
         run: |
-          ./scripts/export.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}} -summary_file_name $env:summary_file_name
+          ./scripts/export.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{ github.event.inputs.manifest_Id }} -summary_file_name $env:summary_file_name
 
       - name: Append additional Log lines to Summary File
         run: |
