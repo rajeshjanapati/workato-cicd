@@ -1,4 +1,13 @@
 name: Export-ManiFest CICD
+env:
+  repo: workato-cicd
+  owner: rajeshjanapati
+  DEPLOYMENT_NAME: Export-ManiFest CICD
+  manifest_id: ${{ github.event.inputs.manifest_Id }}
+  Workato_Token: ${{ secrets.WORKATOTOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+  TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+  
 on:
   repository_dispatch:
     types: [workato]
@@ -10,14 +19,6 @@ on:
     #     default: "101814"
     #     options:
     #       - "101814"
-env:
-  repo: workato-cicd
-  owner: rajeshjanapati
-  DEPLOYMENT_NAME: Export-ManiFest CICD
-  manifest_id: ${{ github.event.inputs.manifest_Id }}
-  Workato_Token: ${{ secrets.WORKATOTOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
-  TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
 
 jobs:
   Workato-CICD:
