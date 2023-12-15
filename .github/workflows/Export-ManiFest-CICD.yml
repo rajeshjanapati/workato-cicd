@@ -9,11 +9,8 @@ env:
   TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
   
 on:
-  push:
-    branches:
-      - cicd
   repository_dispatch:
-    types: [Workato]
+    types: [workato]
     inputs:
       manifest_Id:
         type: string
