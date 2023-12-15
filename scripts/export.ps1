@@ -5,6 +5,9 @@ Param (
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
+$CurrentBranch = git rev-parse --abbrev-ref HEAD
+Write-Host "Current branch is: $CurrentBranch"
+
 $headers = @{ Authorization = "Bearer $accessToken" }
 
 # create cicd folder if not exists
