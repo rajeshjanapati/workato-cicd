@@ -34,3 +34,17 @@ jobs:
         id: set_timestamp
         run: |
           echo "TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S %Z")" >> $GITHUB_ENV
+
+      - name: Full Code Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: "${{ secrets.GITHUBTOKEN }}"
+
+      - name: Run Workflow
+        run: |
+          echo "Manifest ID: ${{ github.event.client_payload.manifest_Id }}"
+
+      - name: Debug Payload
+        run: |
+          echo "Event Payload: ${{ toJson(github.event) }}"
