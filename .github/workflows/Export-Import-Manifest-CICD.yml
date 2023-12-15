@@ -1,4 +1,4 @@
-name: Export-ManiFest CICD
+name: Export-Import-ManiFest CICD
 on:
   repository_dispatch:
     types: [Export]
