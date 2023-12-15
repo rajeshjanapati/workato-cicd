@@ -12,13 +12,18 @@ $headers = @{ Authorization = "Bearer $accessToken" }
 
 # create cicd folder if not exists
 $cicdPath = "cicd"
-if (!(Test-Path -PathType Container cicd)) {
-    mkdir "cicd"
-    cd cicd
+if (!(Test-Path -PathType Container $cicdPath)) {
+    mkdir $cicdPath
+    cd $cicdPath
     Write-Host "Inside if: Created and moved to $cicdPath"
 } else {
-    cd cicd
-    Write-Host "Inside else: Moved to $cicdPath"
+    # Remove the directory and its contents if it exists
+    Remove-Item -Path $cicdPath -Recurse
+    
+    # Introduce a 2-second delay
+    Start-Sleep -Seconds 2
+    mkdir $cicdPath
+    cd $cicdPath
 }
 
 # Initialize an empty string to store all environment summaries
