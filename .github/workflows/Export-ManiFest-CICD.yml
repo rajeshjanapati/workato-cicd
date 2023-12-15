@@ -1,8 +1,13 @@
 name: Export-ManiFest CICD
 on:
-  push:
-    branches:
-      - cicd
+  workflow_dispatch:
+    inputs:
+      manifest_Id:
+        description: 'Recipe manifest Id to Export'
+        required: true
+        default: '101814'
+        options:
+          - '101814'
 
 env:
   repo: workato-cicd
@@ -11,7 +16,7 @@ env:
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
   TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
-  
+
 jobs:
   Workato-CICD:
     name: Export-ManiFest CICD
