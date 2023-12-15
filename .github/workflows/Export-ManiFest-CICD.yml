@@ -1,27 +1,17 @@
 name: Export-ManiFest CICD
+on:
+  push:
+    branches:
+      - cicd
+
 env:
   repo: workato-cicd
   owner: rajeshjanapati
   DEPLOYMENT_NAME: Export-ManiFest CICD
-  manifest_id: ${{ github.event.inputs.manifest_Id }}
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
   TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
-
-on:
-  repository_dispatch:
-    types: [workato]
-    branches:
-      - cicd
-    inputs:
-      manifest_Id:
-        type: string
-        required: true
-        description: Recipe manifest Id to Export
-        default: "101814"
-        options:
-          - "101814"
-
+  
 jobs:
   Workato-CICD:
     name: Export-ManiFest CICD
@@ -37,16 +27,4 @@ jobs:
         run: |
           echo "TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S %Z")" >> $GITHUB_ENV
 
-      - name: Full Code Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: "${{ secrets.GITHUBTOKEN }}"
-
-      - name: Run Workflow
-        run: |
-          echo "Manifest ID: ${{ github.event.client_payload.manifest_Id }}"
-
-      - name: Debug Payload
-        run: |
-          echo "Event Payload: ${{ toJson(github.event) }}"
+      # Add more steps as needed
