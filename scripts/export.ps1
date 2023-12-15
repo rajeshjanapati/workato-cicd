@@ -1,126 +1,118 @@
-name: Export-ManiFest CICD
-env:
-  repo: workato-cicd
-  owner: rajeshjanapati
-  DEPLOYMENT_NAME: Export-ManiFest CICD
-  manifest_id: ${{ github.event.inputs.manifest_Id }}
-  Workato_Token: ${{ secrets.WORKATOTOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
-  TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
-  
-on:
-  repository_dispatch:
-    types: [workato]
-    # inputs:
-    #   manifest_Id:
-    #     type: string
-    #     required: true
-    #     description: Recipe manifest Id to Export
-    #     default: "101814"
-    #     options:
-    #       - "101814"
+# Input parameters
+Param (
+    [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
+    [Parameter(mandatory = $true)][string]$manifestId, # To receive manifest_ID    
+    [Parameter(mandatory = $true)][string]$summary_file_name
+)
 
-jobs:
-  Workato-CICD:
-    name: Export-ManiFest CICD
-    runs-on: ubuntu-latest
+$headers = @{ Authorization = "Bearer $accessToken" }
 
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+# create cicd folder if not exists
+$cicdPath = "cicd"
+if (!(Test-Path -PathType Container cicd)) {
+    mkdir "cicd"
+    cd cicd
+    Write-Host "Inside if: Created and moved to $cicdPath"
+} else {
+    cd cicd
+    Write-Host "Inside else: Moved to $cicdPath"
+}
 
-    steps:
-      - name: Set TIMESTAMP
-        id: set_timestamp
-        run: |
-          echo "TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S %Z")" >> $GITHUB_ENV
+# Initialize an empty string to store all environment summaries
+$allSummaries_Log = ""
 
-      - name: Set Summary File Name
-        id: set_summary_file
-        run: |
-          TIMESTAMP=$TIMESTAMP
-          echo "summary_file_name=summary_$(date -u -d "$TIMESTAMP" +"%Y-%m-%d_%H_%M_%S").txt" >> $GITHUB_ENV
+# Initialize an array to store proxy names
+$manifestName_Success = @()
+$manifestName_Failure = @()
+$manifestNameCountIn_Success = 0
+$manifestNameCountIn_Failed = 0
 
-      - name: Full Code Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: "${{ secrets.GITHUBTOKEN }}"
+# Initial API request to get the ID
+$idPath = "https://www.workato.com/api/packages/export/$manifestId"
 
-      - name: Export CICD
-        shell: pwsh
-        run: |
-          ./scripts/export.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}} -summary_file_name $env:summary_file_name
+try {
+    $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
 
-      - name: Append additional Log lines to Summary File
-        run: |
-          SUMMARY_FILE="${{ env.summary_file_name }}"
+    # Check if the response content is not empty
+    if ($idResponse) {
+        # Extract the "id" value
+        $idValue = $idResponse.id
 
-          # Append log lines to the summary file
-          echo "Workflow Executed at: ${{ env.TIMESTAMP }}" >> "$SUMMARY_FILE"
-          echo "Job Status: ${{ job.status }}" >> "$SUMMARY_FILE"
-          echo "Triggered by: ${{ github.actor }}" >> "$SUMMARY_FILE"
+        # Print the result
+        Write-Host "ID Value: $idValue"
 
-      - name: Upload Summary Log File in to Git
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.summary_file_name }}
-          path: ${{ env.summary_file_name }}
+        # Make subsequent API requests until download_url is not null
+        $downloadURL = $null
+        do {
+            $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
+            Write-Host "downloadURLpath: $downloadURLpath"
 
-      - name: Remove Summary Log File from Git Repository
-        run: rm ${{ env.summary_file_name }}
-      
-      - name: Create cicd branch if not exists
-        run: |
-          git show-ref --verify --quiet refs/heads/cicd || git checkout -b cicd
+            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
 
-      - name: Add local files to Git local branch
-        run: |
-          git config --global user.email "rajeshjanapati@gmail.com"
-          git config --global user.name "rajeshjanapati"
-          git add .
+            if ($downloadURLresponse) {
+                $currentdir = Get-Location
+                $downloadURL = $downloadURLresponse.download_url
 
-      - name: Check for delta changes - Git
-        id: check_git_changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Local branch is not up to date with remote_branch. Committing and pushing latest code to Git"
-            git commit -a -m "cicd update"
+                if ($downloadURL -ne $null -and $downloadURL -ne "null") {
+                    # Extract file name from the URL without query parameters
+                    $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
 
-            # Attempt to pull and auto-merge
-            if git pull --no-edit --no-rebase origin cicd; then
-              echo "Merge successful. Pushing changes."
-              git push origin cicd
-            else
-              echo "Merge conflicts occurred. Please resolve conflicts and commit the changes."
-            fi
-          else
-            echo "Local branch is up to date with Remote branch. No changes to push."
-            exit 0
-          fi
-          
-      - name: Send Notification to Teams
-        if: ${{ always() }}
-        shell: pwsh
-        run: |   
-          
-          $TIMESTAMP="${{ env.TIMESTAMP }}"
-          $TEAMS_WEBHOOK_URL="${{ secrets.TEAMS_WEBHOOK_URL }}"
-          $WORKFLOW_NAME="${{ github.workflow }}"
-          $RUN_ID="${{ github.run_id }}"
-          $RUN_NUMBER="${{ github.run_number }}"
-          $GIT_BRANCH="${{ github.ref }}"
-          $JOB_STATUS="${{ job.status }}"
-          $EVENT_TYPE="${{ github.event_name }}"
-          if( $EVENT_TYPE -eq "schedule" ) {
-                  $TRIGGER_BY_NAME="Scheduler"
-          }
-          else {
-                  $TRIGGER_BY_NAME="${{ github.actor }}"
-          }
-          $ARTIFACT_LINK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          
-          # Call the function from utilities.ps1 script
-          . ./scripts/utilities.ps1
-          Post-MessagesToTeams -title "$TITLE" -summary "$SUMMARY" -workflowName "$WORKFLOW_NAME" -runId "$RUN_ID" -runNumber "$RUN_NUMBER" -executionTimestamp "$TIMESTAMP" -triggeredByName "$TRIGGER_BY_NAME" -EventType "$EVENT_TYPE" -gitBranch "$GIT_BRANCH" -jobStatus "$JOB_STATUS" -messageColor "$MESSAGE_COLOR" -themeColor "$THEME_COLOR" -artifactLink "$ARTIFACT_LINK" 
-      
+                    # Set the path where you want to save the file (inside the cicd folder)
+                    $savePath = Join-Path $currentdir "$fileName.zip"
+
+                    # Check if the file already exists, and delete it if it does
+                    if (Test-Path $savePath) {
+                        Remove-Item $savePath -Force
+                        Write-Host "Deleted existing file: $savePath"
+                    }
+
+                    try {
+                        $manifestName_Success += $fileName
+                        # Download the file
+                        Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
+
+                        Write-Host "File downloaded successfully!"
+                    }
+                    catch {
+                        $manifestName_Failure += $fileName
+                        Write-Host "API Request Failed. Error: $_"
+                        Write-Host "Response Content: $_.Exception.Response.Content"
+                    }
+                }
+            } else {
+                Write-Host "API Request Successful but response content is empty."
+            }
+
+            # Delay before making the next request (optional)
+            Start-Sleep -Seconds 5
+        } while ($downloadURL -eq $null -or $downloadURL -eq "null")
+    } else {
+        Write-Host "API Request Successful but response content is empty."
+    }
+}
+catch {
+    Write-Host "API Request Failed. Error: $_"
+    Write-Host "Response Content: $_.Exception.Response.Content"
+}
+
+$manifestNameList_Success =  $($manifestName_Success -join ', ')
+$manifestNameList_Failed =  $($manifestName_Failure -join ', ')
+
+$manifestNameCountIn_Success = $manifestName_Success.Count
+$manifestNameCountIn_Failed = $manifestName_Failure.Count
+
+$manifestName_Log_Success = ("manifest Recipe Exported Successfully to GitHub: Count - $manifestNameCountIn_Success, Manifest Names - $manifestNameList_Success`r`n")
+$manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNameCountIn_Failed, Manifest Names - $manifestNameList_Failed`r`n")
+
+$allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
+
+cd ..
+
+$currentdir = Get-Location
+Write-Host "currentdir:$currentdir"
+
+# Combine the current directory path with the file name
+$filePath = Join-Path $currentdir $summary_file_name
+
+# Write the combined summaries to the summary file
+$allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
