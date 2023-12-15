@@ -99,7 +99,7 @@ jobs:
             # Attempt to pull and auto-merge
             if git pull --no-edit --no-rebase origin cicd; then
               echo "Merge successful. Pushing changes."
-              git push origin cicd
+              git push origin main
             else
               echo "Merge conflicts occurred. Please resolve conflicts and commit the changes."
             fi
