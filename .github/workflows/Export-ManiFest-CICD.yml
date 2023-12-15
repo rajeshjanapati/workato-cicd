@@ -65,27 +65,36 @@ jobs:
       - name: Remove Summary Log File from Git Repository
         run: rm ${{ env.summary_file_name }}
 
-      - name: Add local files to Git local branch
+      - name: Commit and Push Changes
         run: |
           git config --global user.email "rajeshjanapati@gmail.com"
           git config --global user.name "rajeshjanapati"
           git add .
+          git commit -m "Commit message"
+          git push origin HEAD:main
 
-      - name: Check for delta changes - Git
-        id: check_git_changes
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            echo "Local branch is not up to date with remote_branch. Committing and pushing latest code to Git"
-            git commit -a -m "cicd update"
 
-            # Attempt to pull and auto-merge
-            if git pull --no-edit --no-rebase origin cicd; then
-              echo "Merge successful. Pushing changes."
-              git push origin HEAD:main
-            else
-              echo "Merge conflicts occurred. Please resolve conflicts and commit the changes."
-            fi
-          else
-            echo "Local branch is up to date with Remote branch. No changes to push."
-            exit 0
-          fi
+      # - name: Add local files to Git local branch
+      #   run: |
+      #     git config --global user.email "rajeshjanapati@gmail.com"
+      #     git config --global user.name "rajeshjanapati"
+      #     git add .
+
+      # - name: Check for delta changes - Git
+      #   id: check_git_changes
+      #   run: |
+      #     if [[ -n "$(git status --porcelain)" ]]; then
+      #       echo "Local branch is not up to date with remote_branch. Committing and pushing latest code to Git"
+      #       git commit -a -m "cicd update"
+
+      #       # Attempt to pull and auto-merge
+      #       if git pull --no-edit --no-rebase origin cicd; then
+      #         echo "Merge successful. Pushing changes."
+      #         git push origin HEAD:main
+      #       else
+      #         echo "Merge conflicts occurred. Please resolve conflicts and commit the changes."
+      #       fi
+      #     else
+      #       echo "Local branch is up to date with Remote branch. No changes to push."
+      #       exit 0
+      #     fi
