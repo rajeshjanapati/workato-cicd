@@ -1,25 +1,17 @@
 name: Export-ManiFest CICD
 
 on:
-  repository_dispatch:
-    types: [workato]
-  push:
-    branches:
-      - cicd
+  workflow_dispatch:
+    inputs:
+      manifest_Id:
+        description: 'Recipe manifest Id to Export'
+        required: true
+        default: '101814'
 
 jobs:
   Workato-CICD:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.client_payload.branch }}
-          
-      - name: Set TIMESTAMP
-        id: set_timestamp
-        run: |
-          echo "TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S %Z")" >> $GITHUB_ENV
-
-      # Add more steps as needed
+      - name: Set Manifest ID
+        run: echo "Manifest ID: ${{ github.event.inputs.manifest_Id }}"
