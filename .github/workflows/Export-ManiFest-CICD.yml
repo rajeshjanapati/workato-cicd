@@ -2,14 +2,14 @@ name: Export-ManiFest CICD
 on:
   repository_dispatch:
     types: [workato]
-    inputs:
-      manifest_Id:
-        type: string
-        required: true
-        description: Recipe manifest Id to Export
-        default: "101814"
-        options:
-          - "101814"
+    # inputs:
+    #   manifest_Id:
+    #     type: string
+    #     required: true
+    #     description: Recipe manifest Id to Export
+    #     default: "101814"
+    #     options:
+    #       - "101814"
 env:
   repo: workato-cicd
   owner: rajeshjanapati
