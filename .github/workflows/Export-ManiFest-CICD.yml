@@ -3,6 +3,9 @@ name: Export-ManiFest CICD
 on:
   repository_dispatch:
     types: [workato]
+  push:
+    branches:
+      - cicd
 
 jobs:
   Workato-CICD:
