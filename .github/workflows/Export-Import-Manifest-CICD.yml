@@ -10,12 +10,19 @@ on:
         default: "101814"
         options:
           - "101814"
+      folder_Id:
+        type: string
+        required: true
+        description: Recipe folder Id to Import
+        
 env:
   DEPLOYMENT_NAME: Export-ManiFest CICD
   manifest_id: ${{ github.event.client_payload.manifest_Id }}
-  Workato_Token: ${{ secrets.WORKATOTOKEN }}
+  Workato_Token_Export: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
   TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+  folder_Id: ${{ github.event.inputs.folder_Id }}
+  Workato_Token_Import: ${{ secrets.PRODACCESSTOKEN }}
 
 jobs:
   Workato-CICD:
