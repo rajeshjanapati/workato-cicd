@@ -1,30 +1,12 @@
 name: Export-ManiFest CICD
-on:
-  workflow_dispatch:
-    inputs:
-      manifest_Id:
-        description: 'Recipe manifest Id to Export'
-        required: true
-        default: '101814'
-        options:
-          - '101814'
 
-env:
-  repo: workato-cicd
-  owner: rajeshjanapati
-  DEPLOYMENT_NAME: Export-ManiFest CICD
-  Workato_Token: ${{ secrets.WORKATOTOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
-  TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+on:
+  repository_dispatch:
+    types: [workato]
 
 jobs:
   Workato-CICD:
-    name: Export-ManiFest CICD
     runs-on: ubuntu-latest
-
-    permissions:
-      contents: 'read'
-      id-token: 'write'
 
     steps:
       - name: Set TIMESTAMP
