@@ -11,6 +11,8 @@ on:
         options:
           - "101814"
 env:
+  repo: workato-cicd
+  owner: rajeshjanapati
   DEPLOYMENT_NAME: Export-ManiFest CICD
   manifest_id: ${{ github.event.inputs.manifest_Id }}
   Workato_Token: ${{ secrets.WORKATOTOKEN }}
