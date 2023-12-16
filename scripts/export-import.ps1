@@ -13,6 +13,10 @@ Param (
 $CurrentBranch = git rev-parse --abbrev-ref HEAD
 Write-Host "Current branch is: $CurrentBranch"
 
+Write-Host "manifestId:$manifestId"
+Write-Host "action:$action"
+Write-Host "folderId:$folderId"
+
 $headers = @{ Authorization = "Bearer $workatoToken" }
 
 # create cicd folder if not exists
