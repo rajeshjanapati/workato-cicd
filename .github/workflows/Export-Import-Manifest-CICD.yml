@@ -87,7 +87,7 @@ jobs:
       - name: Export CICD
         shell: pwsh
         run: |
-          ./scripts/export-import.ps1 -workatoToken "${{ env.Workato_Token_Export }}" -prodToken "${{ env.Workato_Token_Import }}" -manifestId ${{ github.event.client_payload.manifest_Id }} -folderId ${{ github.event.client_payload.folder_Id }} -manifestName ${{ env.manifest_name }} -summary_file_name $env:summary_file_name -action ${{ github.event.client_payload.ACTION_TYPE }}
+          ./scripts/export-import.ps1 -workatoToken ${{ secrets.WORKATOTOKEN }} -prodToken ${{ secrets.PRODACCESSTOKEN }} -manifestId ${{ github.event.client_payload.manifest_Id }} -folderId ${{ github.event.client_payload.folder_Id }} -manifestName ${{ env.manifest_name }} -summary_file_name $env:summary_file_name -action ${{ github.event.client_payload.ACTION_TYPE }}
 
       - name: Append additional Log lines to Summary File
         run: |
