@@ -38,7 +38,8 @@ $manifestNameCountIn_Success = 0
 $manifestNameCountIn_Failed = 0
 
 # Initial API request to get the ID
-$idPath = "https://www.workato.com/api/packages/export/$manifestId"
+$idPath = "https://www.workato.com/api/packages/export/"+$manifestId
+Write-Host "idPath:$idPath"
 
 try {
     $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers_workato -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
@@ -102,6 +103,7 @@ try {
 }
 catch {
     $allSummaries_Log += "API Request Failed, recipe is not Exported and Imported, Please try again...!"
+    Write-Host "API Request Failed, recipe is not Exported and Imported, Please try again...!"
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
