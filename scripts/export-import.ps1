@@ -9,9 +9,8 @@ Param (
     [Parameter(mandatory = $true)][string]$manifestName # To receive manifest name    
 )
 
-# Get the current branch using full path
-$CurrentBranch = git -C $PSScriptRoot rev-parse --abbrev-ref HEAD
-Write-Host "Current branch is: $CurrentBranch"
+# Get the script directory
+$ScriptDirectory = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
 # Print input parameters
 Write-Host "manifestId:$manifestId"
@@ -21,12 +20,12 @@ Write-Host "workatoToken:$workatoToken"
 Write-Host "prodToken:$prodToken"
 
 # Set full path for cicd folder
-$cicdPath = Join-Path $PSScriptRoot "cicd"
+$cicdPath = Join-Path $ScriptDirectory "cicd"
 
 # create cicd folder if not exists
 if (!(Test-Path -PathType Container $cicdPath)) {
     mkdir $cicdPath
-    Write-Host "Inside if: Created and moved to $cicdPath"
+    Write-Host "Created $cicdPath"
 } else {
     Write-Host "cicd folder already exists."
 }
