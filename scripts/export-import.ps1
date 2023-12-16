@@ -18,7 +18,7 @@ Write-Host "folderId:$folderId"
 Write-Host "workatoToken:$workatoToken"
 Write-Host "prodToken:$prodToken"
 
-$headers_workato = @{ Authorization = "Bearer $prodToken" }
+$headers_workato = @{ Authorization = "Bearer $workatoToken" }
 
 # create cicd folder if not exists
 $cicdPath = "cicd"
@@ -61,7 +61,7 @@ try {
             $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
             Write-Host "downloadURLpath: $downloadURLpath"
 
-            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
+            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers_workato
 
             if ($downloadURLresponse) {
                 $currentdir = Get-Location
