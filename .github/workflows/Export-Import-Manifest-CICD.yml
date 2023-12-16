@@ -14,6 +14,18 @@ on:
         type: string
         required: true
         description: Recipe folder Id to Import
+      action-type:
+        type: choice
+        required: false
+        description: Action To Perform
+        default: "ImportAll"
+        options:
+          - ImportAll
+          - Create
+      manifest_Name:
+        type: string
+        required: false
+        description: Manifest Name to Import
         
 env:
   DEPLOYMENT_NAME: Export-ManiFest CICD
@@ -21,8 +33,10 @@ env:
   Workato_Token_Export: ${{ secrets.WORKATOTOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
   TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
-  folder_Id: ${{ github.event.inputs.folder_Id }}
+  folder_Id: ${{ github.event.client_payload.folder_Id }}
   Workato_Token_Import: ${{ secrets.PRODACCESSTOKEN }}
+  ACTION_TYPE: ${{ github.event.client_payload.ACTION_TYPE }}
+  manifest_name: "${{github.event.client_payload.manifest_Name == '' &&  'null' || github.event.client_payload.manifest_Name}}"
 
 jobs:
   Workato-CICD:
@@ -45,6 +59,24 @@ jobs:
           TIMESTAMP=$TIMESTAMP
           echo "summary_file_name=summary_$(date -u -d "$TIMESTAMP" +"%Y-%m-%d_%H_%M_%S").txt" >> $GITHUB_ENV
 
+      - id: "input-validation"
+        name: Validate Input
+        shell: pwsh
+        run: |
+          $Action="${{ env.ACTION_TYPE }}"
+          $manifestName="${{ env.manifest_name }}"
+
+          $manifestNameValid = ![string]::IsNullOrEmpty($manifestName) -And ![string]::IsNullOrWhitespace($manifestName) -And $manifestName -ne "null"
+
+          if( $Action -eq "Create" ){
+              if( $manifestNameValid ){
+                  Write-Host "Input is Valid"
+              }
+              else {
+                  Write-Error "For Create manifest Name is required"
+              }
+          }
+
       - name: Full Code Checkout
         uses: actions/checkout@v4
         with:
@@ -54,7 +86,7 @@ jobs:
       - name: Export CICD
         shell: pwsh
         run: |
-          ./scripts/export.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}} -summary_file_name $env:summary_file_name
+          ./scripts/export-import.ps1 -workatoToken "${{ secrets.WORKATOTOKEN }}" -prodToken "${{ secrets.PRODACCESSTOKEN }}" -manifestId ${{env.manifest_id}} -folderId ${{env.folder_Id}} -manifestName ${{env.manifest_name}} -summary_file_name $env:summary_file_name -action ${{env.ACTION_TYPE}}
 
       - name: Append additional Log lines to Summary File
         run: |
