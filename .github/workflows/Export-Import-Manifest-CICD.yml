@@ -65,7 +65,7 @@ jobs:
         shell: pwsh
         run: |
           $Action="${{ github.event.client_payload.ACTION_TYPE }}"
-          $manifestName="${{ env.manifest_name }}"
+          $manifestName="${{ github.event.client_payload.manifest_Name }}"
 
           $manifestNameValid = ![string]::IsNullOrEmpty($manifestName) -And ![string]::IsNullOrWhitespace($manifestName) -And $manifestName -ne "null"
 
