@@ -16,7 +16,7 @@ Write-Host "manifestId:$manifestId"
 Write-Host "action:$action"
 Write-Host "folderId:$folderId"
 
-$headers = @{ Authorization = "Bearer $workatoToken" }
+$headers_workato = @{ Authorization = "Bearer $workatoToken" }
 
 # create cicd folder if not exists
 $cicdPath = "cicd"
@@ -41,7 +41,7 @@ $manifestNameCountIn_Failed = 0
 $idPath = "https://www.workato.com/api/packages/export/$manifestId"
 
 try {
-    $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
+    $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers_workato -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
 
     # Check if the response content is not empty
     if ($idResponse) {
@@ -101,6 +101,7 @@ try {
     }
 }
 catch {
+    $allSummaries_Log += "API Request Failed, recipe is not Exported and Imported, Please try again...!"
     Write-Host "API Request Failed. Error: $_"
     Write-Host "Response Content: $_.Exception.Response.Content"
 }
