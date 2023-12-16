@@ -120,7 +120,7 @@ $manifestDirectory = "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
 
 # Initialize an empty string to store all environment summaries
-$allSummaries_Log = ""
+# $allSummaries_Log = ""
 
 if ($action -eq "Create") {
   Set-Location $manifestDirectory
