@@ -22,6 +22,9 @@ Write-Host "prodToken:$prodToken"
 # Set full path for cicd folder
 $cicdPath = Join-Path $ScriptDirectory "cicd"
 
+# Navigate to the root directory of the repository
+cd $env:GITHUB_WORKSPACE
+
 # create cicd folder if not exists
 if (!(Test-Path -PathType Container $cicdPath)) {
     mkdir $cicdPath
@@ -124,7 +127,7 @@ $manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNam
 $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
 
 # Set full path for the manifest directory
-$manifestDirectory = Join-Path $PSScriptRoot "cicd"
+$manifestDirectory = Join-Path $ScriptDirectory "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
 
 # Check if the initial API request was successful before proceeding
@@ -170,7 +173,7 @@ if ($initialApiSuccess) {
         $manifestName_Failure = @()
 
         # Set full path for the manifest directory
-        $manifestDirectory = Join-Path $PSScriptRoot "cicd"
+        $manifestDirectory = Join-Path $ScriptDirectory "cicd"
 
         # Set-Location $manifestDirectory
         $currentdir = Get-Location
@@ -224,10 +227,10 @@ else {
 }
 
 # Set full path for the parent directory
-Set-Location $PSScriptRoot
+Set-Location $ScriptDirectory
 
 # Combine the current directory path with the file name
-$filePath = Join-Path $PSScriptRoot $summary_file_name
+$filePath = Join-Path $ScriptDirectory $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
