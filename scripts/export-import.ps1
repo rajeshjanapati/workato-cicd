@@ -18,7 +18,7 @@ Write-Host "folderId:$folderId"
 Write-Host "workatoToken:$workatoToken"
 Write-Host "prodToken:$prodToken"
 
-$headers_workato = @{ Authorization = "Bearer $workatoToken" }
+$headers_workato = @{ Authorization = "Bearer $prodToken" }
 
 # create cicd folder if not exists
 $cicdPath = "cicd"
