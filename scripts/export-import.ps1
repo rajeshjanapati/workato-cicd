@@ -168,7 +168,7 @@ elseif ($action -eq "ImportAll") {
   $manifestNameCountIn_Success = 0
   $manifestNameCountIn_Failed = 0
 
-  Set-Location $manifestDirectory
+  # Set-Location $manifestDirectory
   $currentdir = Get-Location
   $zipFiles = Get-ChildItem -Filter "*.zip"
 
