@@ -1,8 +1,8 @@
 name: Export-Import-ManiFest CICD
 on:
-  workflow_dispatch:
-  # repository_dispatch:
-    # types: [Export]
+  # workflow_dispatch:
+  repository_dispatch:
+    types: [Export]
     inputs:
       manifest_Id:
         type: string
