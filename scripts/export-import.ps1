@@ -9,42 +9,44 @@ Param (
     [Parameter(mandatory = $true)][string]$manifestName # To receive manifest name    
 )
 
-$CurrentBranch = git rev-parse --abbrev-ref HEAD
+# Get the current branch using full path
+$CurrentBranch = git -C $PSScriptRoot rev-parse --abbrev-ref HEAD
 Write-Host "Current branch is: $CurrentBranch"
 
+# Print input parameters
 Write-Host "manifestId:$manifestId"
 Write-Host "action:$action"
 Write-Host "folderId:$folderId"
 Write-Host "workatoToken:$workatoToken"
 Write-Host "prodToken:$prodToken"
 
-$headers_workato = @{ Authorization = "Bearer $workatoToken" }
+# Set full path for cicd folder
+$cicdPath = Join-Path $PSScriptRoot "cicd"
 
 # create cicd folder if not exists
-$cicdPath = "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
     mkdir $cicdPath
-    cd $cicdPath
     Write-Host "Inside if: Created and moved to $cicdPath"
 } else {
-    cd $cicdPath
+    Write-Host "cicd folder already exists."
 }
 
 # Initialize an empty string to store all environment summaries
 $allSummaries_Log = ""
 
-# Initialize an array to store proxy names
+# Initialize arrays to store manifest names
 $manifestName_Success = @()
 $manifestName_Failure = @()
-$manifestNameCountIn_Success = 0
-$manifestNameCountIn_Failed = 0
 
 # Initial API request to get the ID
 $idPath = "https://www.workato.com/api/packages/export/"+$manifestId
 Write-Host "idPath:$idPath"
 
+# Variable to track initial API success
+$initialApiSuccess = $false
+
 try {
-    $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers_workato -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
+    $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers @{ Authorization = "Bearer $workatoToken" } -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
 
     # Check if the response content is not empty
     if ($idResponse) {
@@ -61,7 +63,7 @@ try {
             $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
             Write-Host "downloadURLpath: $downloadURLpath"
 
-            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers_workato
+            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers @{ Authorization = "Bearer $workatoToken" }
 
             if ($downloadURLresponse) {
                 $currentdir = Get-Location
@@ -72,7 +74,7 @@ try {
                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
 
                     # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $currentdir "$fileName.zip"
+                    $savePath = Join-Path $cicdPath "$fileName.zip"
 
                     # Check if the file already exists, and delete it if it does
                     if (Test-Path $savePath) {
@@ -122,129 +124,113 @@ $manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNam
 
 $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
 
-
-$headers = @{ 'Authorization' = "Bearer $prodToken" }
-
-$manifestDirectory = "cicd"
+# Set full path for the manifest directory
+$manifestDirectory = Join-Path $PSScriptRoot "cicd"
 Write-Host "manifestDirectory:$manifestDirectory"
 
-# Initialize an empty string to store all environment summaries
-# $allSummaries_Log = ""
+# Check if the initial API request was successful before proceeding
 if ($initialApiSuccess) {
-  if ($action -eq "Create") {
-    Set-Location $manifestDirectory
-    $currentdir = Get-Location
-    $manifestNameFolder = "$currentdir"
-    Set-Location $manifestNameFolder
+    if ($action -eq "Create") {
+        Set-Location $manifestDirectory
+        $currentdir = Get-Location
+        $manifestNameFolder = "$currentdir"
+        Set-Location $manifestNameFolder
 
+        # Check if the ZIP file exists in the current directory
+        $zipFile = Get-ChildItem -Path $manifestDirectory -Filter "$manifestName.zip"
+        Write-Host "FileName:$zipFile"
 
-    # Check if the ZIP file exists in the current directory
-    $zipFile = Get-ChildItem -Filter "$manifestName.zip"
-    Write-Host "FileName:$zipFile"
+        $allSummaries_Log += $manifestName
 
-    $allSummaries_Log += $manifestName
+        if ($zipFile) {
+            # Read the ZIP file as byte array
+            $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
 
-    if ($zipFile) {
-      # Read the ZIP file as byte array
-      $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
+            Write-Host "Found ZIP file: $zipFile"
+            Write-Host "Start Import manifest for $manifestName"
 
-      Write-Host "Found ZIP file: $zipFile"
-      Write-Host "Start Import manifest for $manifestName"
+            # Upload the ZIP file content to Workato
+            Write-Host "Uploading ZIP file content to $uri..."
+            $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
+            Write-Host "API:$uri"
 
-      # Upload the ZIP file content to Workato
-      Write-Host "Uploading ZIP file content to $uri..."
-      $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
-      Write-Host "API:$uri"
+            try {
+                Invoke-RestMethod -Uri $uri -Method "POST" -Headers @{ 'Authorization' = "Bearer $prodToken" } -Body $fileContent -ContentType "application/zip"
 
-      try {
-        Invoke-RestMethod -Uri $uri -Method "POST" -Headers $headers -Body $fileContent -ContentType "application/zip"
-
-        Write-Host "manifestName $manifestName"
-      } catch {
-        Write-Host "Error uploading ZIP file: $($_.Exception.Message)"
-      }
-    } else {
-      Write-Host "No ZIP file found with the name $manifestName"
+                Write-Host "manifestName $manifestName"
+            } catch {
+                Write-Host "Error uploading ZIP file: $($_.Exception.Message)"
+            }
+        } else {
+            Write-Host "No ZIP file found with the name $manifestName"
+        }
     }
-  }
-  elseif ($action -eq "ImportAll") {
-    # Initialize an array to store proxy names
-    $manifestName_Success = @()
-    $manifestName_Failure = @()
-    $manifestNameCountIn_Success = 0
-    $manifestNameCountIn_Failed = 0
+    elseif ($action -eq "ImportAll") {
+        # Initialize arrays to store manifest names
+        $manifestName_Success = @()
+        $manifestName_Failure = @()
 
-    # Set-Location $manifestDirectory
-    $currentdir = Get-Location
-    $zipFiles = Get-ChildItem -Filter "*.zip"
+        # Set full path for the manifest directory
+        $manifestDirectory = Join-Path $PSScriptRoot "cicd"
 
-    foreach ($zipFile in $zipFiles) {
-      $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
+        # Set-Location $manifestDirectory
+        $currentdir = Get-Location
+        $zipFiles = Get-ChildItem -Path $manifestDirectory -Filter "*.zip"
 
-      Write-Host "Found ZIP file: $zipFile"
-      # File path
-      $filePath = $zipFile
-      
-      # Extract the base name without extension
-      $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
-      
-      # Output the result
-      Write-Host "Base name without extension: $baseNameWithoutExtension"
+        foreach ($zipFile in $zipFiles) {
+            $fileContent = [System.IO.File]::ReadAllBytes($zipFile)
 
-      $manifestName_Success += $baseNameWithoutExtension
+            Write-Host "Found ZIP file: $zipFile"
+            # File path
+            $filePath = $zipFile
+            
+            # Extract the base name without extension
+            $baseNameWithoutExtension = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
+            
+            # Output the result
+            Write-Host "Base name without extension: $baseNameWithoutExtension"
 
-      # Upload the ZIP file content to Workato
-      $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
-      Write-Host "API:$uri"
+            $manifestName_Success += $baseNameWithoutExtension
 
-      try {
-        Invoke-RestMethod -Uri $uri -Method "POST" -Headers $headers -Body $fileContent -ContentType "application/zip"
-        Write-Host "manifestName $($zipFile.BaseName)"
-      } catch {
-        $manifestName_Failure += $baseNameWithoutExtension
-        Write-Host "Error uploading ZIP file $($zipFile.BaseName): $($_.Exception.Message)"
-      }
+            # Upload the ZIP file content to Workato
+            $uri = "https://www.workato.com/api/packages/import/"+$folderId+"?restart_recipes=true"
+            Write-Host "API:$uri"
+
+            try {
+                Invoke-RestMethod -Uri $uri -Method "POST" -Headers @{ 'Authorization' = "Bearer $prodToken" } -Body $fileContent -ContentType "application/zip"
+                Write-Host "manifestName $($zipFile.BaseName)"
+            } catch {
+                $manifestName_Failure += $baseNameWithoutExtension
+                Write-Host "Error uploading ZIP file $($zipFile.BaseName): $($_.Exception.Message)"
+            }
+        }
+
+        $manifestNameList_Success =  $($manifestName_Success -join ', ')
+        $manifestNameList_Failed =  $($manifestName_Failure -join ', ')
+
+        $manifestNameCountIn_Success = $manifestName_Success.Count
+        $manifestNameCountIn_Failed = $manifestName_Failure.Count
+
+        $manifestName_Log_Success = ("manifest Recipes Imported Successfully to Workato: Count - $manifestNameCountIn_Success, Manifest Names - $manifestNameList_Success`r`n")
+        $manifestName_Log_Failed = ("manifest Recipes Import Failed: Count - $manifestNameCountIn_Failed, Manifest Names - $manifestNameList_Failed`r`n")
+
+        $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
     }
-
-    $manifestNameList_Success =  $($manifestName_Success -join ', ')
-    $manifestNameList_Failed =  $($manifestName_Failure -join ', ')
-
-    $manifestNameCountIn_Success = $manifestName_Success.Count
-    $manifestNameCountIn_Failed = $manifestName_Failure.Count
-
-    $manifestName_Log_Success = ("manifest Recipes Imported Successfully to Workato: Count - $manifestNameCountIn_Success, Manifest Names - $manifestNameList_Success`r`n")
-    $manifestName_Log_Failed = ("manifest Recipes Import Failed: Count - $manifestNameCountIn_Failed, Manifest Names - $manifestNameList_Failed`r`n")
-
-    $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
-
-  }
-
-  else{
-    Write-Host "Please atleast one action to perform...!"
-  }
+    else {
+        Write-Host "Please specify at least one action to perform...!"
+    }
 }
 else {
-  Write-Host "Initial API is not successfull, Please try again...!"
+    Write-Host "Initial API is not successful, Please try again...!"
 }
 
-# $manifestDirectory = "cicd"
-# Set-Location $manifestDirectory
-
-# # Combine the current directory path with the file name
-# $filePath = Join-Path -Path $PWD -ChildPath $summary_file_name
-
-# # Write the combined summaries to the summary file
-# $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
-
-
-
-cd ..
-
-$currentdir = Get-Location
-Write-Host "currentdir:$currentdir"
+# Set full path for the parent directory
+Set-Location $PSScriptRoot
 
 # Combine the current directory path with the file name
-$filePath = Join-Path $currentdir $summary_file_name
+$filePath = Join-Path $PSScriptRoot $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+
+Write-Host "Script execution completed."
