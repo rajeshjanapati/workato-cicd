@@ -15,6 +15,8 @@ Write-Host "Current branch is: $CurrentBranch"
 Write-Host "manifestId:$manifestId"
 Write-Host "action:$action"
 Write-Host "folderId:$folderId"
+Write-Host "workatoToken:$workatoToken"
+Write-Host "prodToken:$prodToken"
 
 $headers_workato = @{ Authorization = "Bearer $workatoToken" }
 
