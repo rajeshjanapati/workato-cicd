@@ -1,12 +1,15 @@
 name: Export-ManiFest CICD
-
 on:
-  workflow_dispatch:
+  repository_dispatch:
+    types: [Export-cicd]
     inputs:
       manifest_Id:
-        description: 'Recipe manifest Id to Export'
+        type: string
         required: true
-        default: '101814'
+        description: Recipe manifest Id to Export
+        default: "101814"
+        options:
+          - "101814"
 
 jobs:
   Workato-CICD:
