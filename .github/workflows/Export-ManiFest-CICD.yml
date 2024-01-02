@@ -71,7 +71,7 @@ jobs:
         run: |
           git config --global user.email "rajeshjanapati@gmail.com"
           git config --global user.name "rajeshjanapati"
-          git add cicd
+          git add .
 
           # Check for delta changes before committing
           if git diff --quiet; then
