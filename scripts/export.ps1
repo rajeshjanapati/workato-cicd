@@ -51,6 +51,7 @@ try {
 
             if ($downloadURLresponse) {
                 $currentdir = Get-Location
+                Write-Host "filelocation: $currentdir"
                 $downloadURL = $downloadURLresponse.download_url
 
                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
