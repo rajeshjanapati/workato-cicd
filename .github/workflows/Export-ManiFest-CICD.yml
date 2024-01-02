@@ -1,8 +1,9 @@
 name: Export-ManiFest CICD
 on:
   repository_dispatch:
-    types: [Export-cicd]
     branches: [cicd]
+    types: [Export-cicd]
+    
     inputs:
       manifest_Id:
         type: string
