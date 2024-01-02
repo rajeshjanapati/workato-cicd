@@ -17,10 +17,11 @@ $headers = @{ Authorization = "Bearer $accessToken" }
 $cicdPath = Join-Path $GitHubWorkspace "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
     mkdir $cicdPath
-    Set-Location $cicdPath
-    Write-Host "Inside if: Created and moved to $cicdPath"
+    Set-Location $GitHubWorkspace
+    Write-Host "Inside if: Created $cicdPath"
 } else {
     Set-Location $cicdPath
+    Write-Host "Inside else: Moved to $cicdPath"
 }
 
 # Initialize an empty string to store all environment summaries
@@ -117,6 +118,7 @@ $filePath = Join-Path $GitHubWorkspace $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+
 
 
 
