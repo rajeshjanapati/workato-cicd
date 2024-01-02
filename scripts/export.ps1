@@ -5,18 +5,21 @@ Param (
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
-# Specify the path where you want to create the folder
-$path = "cicd"  # Replace with your desired path
+# Set folder name (optionally retrieve from workflow inputs if needed)
+$folderName = "cicd"
 
 # Create the folder
-New-Item -Path $path -ItemType Directory
+New-Item -Path $folderName -ItemType Directory
 
-# Check if the folder was created successfully
-If (Test-Path $path) {
-    Write-Host "Folder created successfully at $path"
-} Else {
-    Write-Host "Failed to create folder. Please check permissions and path."
-}
+# Add the folder to the Git index
+git add $folderName
+
+# Commit the change with a descriptive message
+git commit -m "Created $folderName folder in main branch"
+
+# Push the change to the main branch
+git push origin main
+
 
 
 
