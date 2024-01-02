@@ -25,6 +25,15 @@ $currentDirectory = Get-Location
 # Display the current directory
 Write-Host "Current Directory: $currentDirectory"
 
+# Get the list of files in a specific folder
+$folderPath = $currentDirectory
+$fileList = Get-ChildItem -Path $folderPath
+
+# Display the list of files
+foreach ($file in $fileList) {
+    Write-Host "File: $($file.Name)"
+}
+
 # create cicd folder if not exists
 $cicdPath = "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
@@ -36,10 +45,19 @@ else {
 }
 
 # Get the current directory
-$currentDirectory = Get-Location
+$currentDirectory1 = Get-Location
 
 # Display the current directory
-Write-Host "Current Directory: $currentDirectory"
+Write-Host "Current Directory: $currentDirectory1"
+
+# Get the list of files in a specific folder
+$folderPath1 = $currentDirectory1
+$fileList = Get-ChildItem -Path $folderPath1
+
+# Display the list of files
+foreach ($file in $fileList) {
+    Write-Host "File: $($file.Name)"
+}
 
 # Save the text file
 $textContent | Out-File -FilePath "scripts/$cicdPath/example.txt" -Encoding UTF8
