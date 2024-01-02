@@ -5,24 +5,20 @@ Param (
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
-# Set folder name (optionally retrieve from workflow inputs if needed)
+# Name of the folder you want to create
 $folderName = "cicd"
 
 # Create the folder
-New-Item -Path $folderName -ItemType Directory
+New-Item -Path $folderName -ItemType Directory -Force
 
-git config --global user.email "rajeshjanapati@gmail.com"
-git config --global user.name "rajeshjanapati"
+# Content of the text file
+$textContent = @"
+This is the content of your text file.
+You can add multiple lines here.
+"@
 
-# Add the folder to the Git index
-git add $folderName
-
-# Commit the change with a descriptive message
-git commit -m "Created $folderName folder in main branch"
-
-# Push the change to the main branch
-git push origin main
-
+# Save the text file
+$textContent | Out-File -FilePath "$folderName/example.txt" -Encoding UTF8
 
 
 
