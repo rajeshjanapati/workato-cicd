@@ -9,7 +9,7 @@ Param (
 # If not, navigate to the repository directory first
 
 # Name of the folder you want to create
-$folderName = "cicd"
+$folderName = "your_folder_name"
 
 # Create the folder
 New-Item -Path $folderName -ItemType Directory
@@ -28,6 +28,7 @@ $textContent | Out-File -FilePath "example.txt" -Encoding UTF8
 
 # Optionally, you can navigate back to the repository root
 Set-Location -Path ..
+
 
 
 
