@@ -17,11 +17,9 @@ $headers = @{ Authorization = "Bearer $accessToken" }
 $cicdPath = Join-Path $GitHubWorkspace "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
     mkdir $cicdPath
-    Set-Location $cicdPath
-    Write-Host "Inside if: Created $cicdPath"
+    Write-Host "Created cicd folder: $cicdPath"
 } else {
-    Set-Location $cicdPath
-    Write-Host "Inside else: Moved to $cicdPath"
+    Write-Host "cicd folder already exists: $cicdPath"
 }
 
 # Initialize an empty string to store all environment summaries
@@ -111,13 +109,12 @@ $manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNam
 
 $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
 
-Set-Location $GitHubWorkspace
-
 # Combine the current directory path with the file name
 $filePath = Join-Path $GitHubWorkspace $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+
 
 
 
