@@ -5,8 +5,8 @@ Param (
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
-# Set the path to the GitHub repository workspace
-$GitHubWorkspace = $env:GITHUB_WORKSPACE
+# Set the absolute path to the GitHub repository workspace
+$GitHubWorkspace = "cicd"  # Replace with the actual path
 
 $CurrentBranch = git rev-parse --abbrev-ref HEAD
 Write-Host "Current branch is: $CurrentBranch"
@@ -115,6 +115,7 @@ $filePath = Join-Path $GitHubWorkspace $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+
 
 
 
