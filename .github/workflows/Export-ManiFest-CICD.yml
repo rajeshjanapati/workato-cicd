@@ -78,7 +78,8 @@ jobs:
             echo "No changes to commit. Skipping commit."
           else
             git commit -m "cicd update"
-            git push origin HEAD:cicd
+            # git push origin HEAD:cicd
+            git push -u origin main
           fi
 
       - name: Send Notification to Teams
