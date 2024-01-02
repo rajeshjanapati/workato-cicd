@@ -11,6 +11,9 @@ $folderName = "cicd"
 # Create the folder
 New-Item -Path $folderName -ItemType Directory
 
+git config --global user.email "rajeshjanapati@gmail.com"
+git config --global user.name "rajeshjanapati"
+
 # Add the folder to the Git index
 git add $folderName
 
