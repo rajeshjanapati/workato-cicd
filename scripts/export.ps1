@@ -6,7 +6,7 @@ Param (
 )
 
 # Set the absolute path to the GitHub repository workspace
-$GitHubWorkspace = "cicd"  # Replace with the actual path
+$GitHubWorkspace = "workato-cicd"  # Replace with the actual path
 
 $CurrentBranch = git rev-parse --abbrev-ref HEAD
 Write-Host "Current branch is: $CurrentBranch"
