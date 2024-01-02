@@ -17,10 +17,10 @@ $headers = @{ Authorization = "Bearer $accessToken" }
 $cicdPath = Join-Path $GitHubWorkspace "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
     mkdir $cicdPath
-    cd $cicdPath
+    Set-Location $cicdPath
     Write-Host "Inside if: Created and moved to $cicdPath"
 } else {
-    cd $cicdPath
+    Set-Location $cicdPath
 }
 
 # Initialize an empty string to store all environment summaries
@@ -62,7 +62,7 @@ try {
                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
 
                     # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $GitHubWorkspace "$cicdPath\$fileName.zip"
+                    $savePath = Join-Path $GitHubWorkspace "cicd" "$fileName.zip"
 
                     # Check if the file already exists, and delete it if it does
                     if (Test-Path $savePath) {
@@ -110,13 +110,14 @@ $manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNam
 
 $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
 
-cd $GitHubWorkspace
+Set-Location $GitHubWorkspace
 
 # Combine the current directory path with the file name
 $filePath = Join-Path $GitHubWorkspace $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+
 
 
 
