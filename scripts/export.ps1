@@ -18,6 +18,13 @@ You can add multiple lines here.
 "@
 
 cd scripts
+
+# Get the current directory
+$currentDirectory = Get-Location
+
+# Display the current directory
+Write-Host "Current Directory: $currentDirectory"
+
 # create cicd folder if not exists
 $cicdPath = "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
@@ -27,6 +34,12 @@ if (!(Test-Path -PathType Container $cicdPath)) {
 else {
     cd $cicdPath
 }
+
+# Get the current directory
+$currentDirectory = Get-Location
+
+# Display the current directory
+Write-Host "Current Directory: $currentDirectory"
 
 # Save the text file
 $textContent | Out-File -FilePath "scripts/$cicdPath/example.txt" -Encoding UTF8
