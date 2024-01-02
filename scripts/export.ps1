@@ -1,8 +1,8 @@
 # Input parameters
 Param (
-    [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
-    [Parameter(mandatory = $true)][string]$manifestId, # To receive manifest_ID    
-    [Parameter(mandatory = $true)][string]$summary_file_name
+  [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
+  [Parameter(mandatory = $true)][string]$manifestId, # To receive manifest_ID   
+  [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
 # Set the path to the GitHub repository workspace
@@ -16,10 +16,10 @@ $headers = @{ Authorization = "Bearer $accessToken" }
 # create cicd folder if not exists
 $cicdPath = Join-Path $GitHubWorkspace "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
-    mkdir $cicdPath
-    Write-Host "Created cicd folder: $cicdPath"
+  mkdir $cicdPath
+  Write-Host "Inside if: Created $cicdPath"
 } else {
-    Write-Host "cicd folder already exists: $cicdPath"
+  Write-Host "Inside else: Moved to $cicdPath"  # No need to Set-Location
 }
 
 # Initialize an empty string to store all environment summaries
@@ -35,68 +35,52 @@ $manifestNameCountIn_Failed = 0
 $idPath = "https://www.workato.com/api/packages/export/$manifestId"
 
 try {
-    $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
+  $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
 
-    # Check if the response content is not empty
-    if ($idResponse) {
-        # Extract the "id" value
-        $idValue = $idResponse.id
+  # Check if the response content is not empty
+  if ($idResponse) {
+    # Extract the "id" value
+    $idValue = $idResponse.id
 
-        # Print the result
-        Write-Host "ID Value: $idValue"
+    # Print the result
+    Write-Host "ID Value: $idValue"
 
-        # Make subsequent API requests until download_url is not null
-        $downloadURL = $null
-        do {
-            $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
-            Write-Host "downloadURLpath: $downloadURLpath"
+    # Make subsequent API requests until download_url is not null
+    $downloadURL = $null
+    do {
+      $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
+      Write-Host "downloadURLpath: $downloadURLpath"
 
-            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
+      $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
 
-            if ($downloadURLresponse) {
-                $downloadURL = $downloadURLresponse.download_url
+      if ($downloadURLresponse) {
+        $downloadURL = $downloadURLresponse.download_url
 
-                if ($downloadURL -ne $null -and $downloadURL -ne "null") {
-                    # Extract file name from the URL without query parameters
-                    $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
+        if ($downloadURL -ne $null -and $downloadURL -ne "null") {
+          # Extract file name from the URL without query parameters
+          $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
 
-                    # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $cicdPath "$fileName.zip"
+          # Set the path where you want to save the file (inside the cicd folder)
+          $savePath = Join-Path $cicdPath "$fileName.zip"
 
-                    # Check if the file already exists, and delete it if it does
-                    if (Test-Path $savePath) {
-                        Remove-Item $savePath -Force
-                        Write-Host "Deleted existing file: $savePath"
-                    }
+          # Check if the file already exists, and delete it if it does
+          if (Test-Path $savePath) {
+            Remove-Item $savePath -Force
+            Write-Host "Deleted existing file: $savePath"
+          }
 
-                    try {
-                        $manifestName_Success += $fileName
-                        # Download the file
-                        Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
+          try {
+            $manifestName_Success += $fileName
+            # Download the file
+            Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
 
-                        Write-Host "File downloaded successfully to: $savePath"
-                    }
-                    catch {
-                        $manifestName_Failure += $fileName
-                        Write-Host "API Request Failed. Error: $_"
-                        Write-Host "Response Content: $_.Exception.Response.Content"
-                    }
-                }
-            } else {
-                Write-Host "API Request Successful but response content is empty."
-            }
-
-            # Delay before making the next request (optional)
-            Start-Sleep -Seconds 5
-        } while ($downloadURL -eq $null -or $downloadURL -eq "null")
-    } else {
-        Write-Host "API Request Successful but response content is empty."
-    }
-}
-catch {
-    Write-Host "API Request Failed. Error: $_"
-    Write-Host "Response Content: $_.Exception.Response.Content"
-}
+            Write-Host "File downloaded successfully to: $savePath"
+          }
+          
+        catch {
+            Write-Host "API Request Failed. Error: $_"
+            Write-Host "Response Content: $_.Exception.Response.Content"
+        }
 
 $manifestNameList_Success =  $($manifestName_Success -join ', ')
 $manifestNameList_Failed =  $($manifestName_Failure -join ', ')
