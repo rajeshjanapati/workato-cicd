@@ -49,63 +49,63 @@ jobs:
         run: |
           ./scripts/export.ps1 -accessToken "${{ secrets.WORKATOTOKEN }}" -manifestId ${{env.manifest_id}} -summary_file_name $env:summary_file_name
 
-      - name: Append additional Log lines to Summary File
-        run: |
-          SUMMARY_FILE="${{ env.summary_file_name }}"
+      # - name: Append additional Log lines to Summary File
+      #   run: |
+      #     SUMMARY_FILE="${{ env.summary_file_name }}"
 
-          # Append log lines to the summary file
-          echo "Workflow Executed at: ${{ env.TIMESTAMP }}" >> "$SUMMARY_FILE"
-          echo "Job Status: ${{ job.status }}" >> "$SUMMARY_FILE"
-          echo "Triggered by: ${{ github.actor }}" >> "$SUMMARY_FILE"
+      #     # Append log lines to the summary file
+      #     echo "Workflow Executed at: ${{ env.TIMESTAMP }}" >> "$SUMMARY_FILE"
+      #     echo "Job Status: ${{ job.status }}" >> "$SUMMARY_FILE"
+      #     echo "Triggered by: ${{ github.actor }}" >> "$SUMMARY_FILE"
 
-      - name: Upload Summary Log File in to Git
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.summary_file_name }}
-          path: ${{ env.summary_file_name }}
+      # - name: Upload Summary Log File in to Git
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ env.summary_file_name }}
+      #     path: ${{ env.summary_file_name }}
 
-      - name: Remove Summary Log File from Git Repository
-        run: rm ${{ env.summary_file_name }}
+      # - name: Remove Summary Log File from Git Repository
+      #   run: rm ${{ env.summary_file_name }}
 
-      - name: Add local files to Git local branch
-        run: |
-          git config --global user.email "rajeshjanapati@gmail.com"
-          git config --global user.name "rajeshjanapati"
-          git add .
+      # - name: Add local files to Git local branch
+      #   run: |
+      #     git config --global user.email "rajeshjanapati@gmail.com"
+      #     git config --global user.name "rajeshjanapati"
+      #     git add .
 
-          # Check for delta changes before committing
-          if git diff --quiet; then
-            echo "No changes to commit. Skipping commit."
-          else
-            git commit -m "cicd update"
-            git push origin HEAD:main
-            # git push -u origin main
-          fi
+      #     # Check for delta changes before committing
+      #     if git diff --quiet; then
+      #       echo "No changes to commit. Skipping commit."
+      #     else
+      #       git commit -m "cicd update"
+      #       git push origin HEAD:main
+      #       # git push -u origin main
+      #     fi
 
-      - name: Send Notification to Teams
-        if: ${{ always() }}
-        shell: pwsh
-        run: |   
+      # - name: Send Notification to Teams
+      #   if: ${{ always() }}
+      #   shell: pwsh
+      #   run: |   
           
-          $TIMESTAMP="${{ env.TIMESTAMP }}"
-          $TEAMS_WEBHOOK_URL="${{ secrets.TEAMS_WEBHOOK_URL }}"
-          $WORKFLOW_NAME="${{ github.workflow }}"
-          $RUN_ID="${{ github.run_id }}"
-          $RUN_NUMBER="${{ github.run_number }}"
-          $GIT_BRANCH="${{ github.ref }}"
-          $JOB_STATUS="${{ job.status }}"
-          $EVENT_TYPE="${{ github.event_name }}"
-          if( $EVENT_TYPE -eq "schedule" ) {
-                  $TRIGGER_BY_NAME="Scheduler"
-          }
-          else {
-                  $TRIGGER_BY_NAME="${{ github.actor }}"
-          }
-          $ARTIFACT_LINK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      #     $TIMESTAMP="${{ env.TIMESTAMP }}"
+      #     $TEAMS_WEBHOOK_URL="${{ secrets.TEAMS_WEBHOOK_URL }}"
+      #     $WORKFLOW_NAME="${{ github.workflow }}"
+      #     $RUN_ID="${{ github.run_id }}"
+      #     $RUN_NUMBER="${{ github.run_number }}"
+      #     $GIT_BRANCH="${{ github.ref }}"
+      #     $JOB_STATUS="${{ job.status }}"
+      #     $EVENT_TYPE="${{ github.event_name }}"
+      #     if( $EVENT_TYPE -eq "schedule" ) {
+      #             $TRIGGER_BY_NAME="Scheduler"
+      #     }
+      #     else {
+      #             $TRIGGER_BY_NAME="${{ github.actor }}"
+      #     }
+      #     $ARTIFACT_LINK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           
-          # Call the function from utilities.ps1 script
-          . ./scripts/utilities.ps1
-          Post-MessagesToTeams -title "$TITLE" -summary "$SUMMARY" -workflowName "$WORKFLOW_NAME" -runId "$RUN_ID" -runNumber "$RUN_NUMBER" -executionTimestamp "$TIMESTAMP" -triggeredByName "$TRIGGER_BY_NAME" -EventType "$EVENT_TYPE" -gitBranch "$GIT_BRANCH" -jobStatus "$JOB_STATUS" -messageColor "$MESSAGE_COLOR" -themeColor "$THEME_COLOR" -artifactLink "$ARTIFACT_LINK" 
+      #     # Call the function from utilities.ps1 script
+      #     . ./scripts/utilities.ps1
+      #     Post-MessagesToTeams -title "$TITLE" -summary "$SUMMARY" -workflowName "$WORKFLOW_NAME" -runId "$RUN_ID" -runNumber "$RUN_NUMBER" -executionTimestamp "$TIMESTAMP" -triggeredByName "$TRIGGER_BY_NAME" -EventType "$EVENT_TYPE" -gitBranch "$GIT_BRANCH" -jobStatus "$JOB_STATUS" -messageColor "$MESSAGE_COLOR" -themeColor "$THEME_COLOR" -artifactLink "$ARTIFACT_LINK" 
       
 
       # - name: Add local files to Git local branch
