@@ -5,119 +5,146 @@ Param (
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
-# Set the path to the GitHub repository workspace
-$GitHubWorkspace = $env:GITHUB_WORKSPACE
+# Assume you are already in the repository directory after checkout
+# If not, navigate to the repository directory first
 
-# create cicd folder if not exists
-$cicdPath = Join-Path $GitHubWorkspace "cicd"
-if (!(Test-Path -PathType Container $cicdPath)) {
-    mkdir $cicdPath
-}
+# Name of the folder you want to create
+$folderName = "cicd"
 
-# Set location to cicd folder
-Set-Location $cicdPath
+# Create the folder
+New-Item -Path $folderName -ItemType Directory
 
-$headers = @{ Authorization = "Bearer $accessToken" }
+# Optionally, you can navigate into the folder
+Set-Location -Path $folderName
 
-# Initialize an empty string to store all environment summaries
-$allSummaries_Log = ""
+# Content of the text file
+$textContent = @"
+This is the content of your text file.
+You can add multiple lines here.
+"@
 
-# Initialize an array to store proxy names
-$manifestName_Success = @()
-$manifestName_Failure = @()
-$manifestNameCountIn_Success = 0
-$manifestNameCountIn_Failed = 0
+# Save the text file
+$textContent | Out-File -FilePath "example.txt" -Encoding UTF8
 
-# Initial API request to get the ID
-$idPath = "https://www.workato.com/api/packages/export/$manifestId"
+# Optionally, you can navigate back to the repository root
+Set-Location -Path ..
 
-try {
-    $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
 
-    # Check if the response content is not empty
-    if ($idResponse) {
-        # Extract the "id" value
-        $idValue = $idResponse.id
 
-        # Print the result
-        Write-Host "ID Value: $idValue"
 
-        # Make subsequent API requests until download_url is not null
-        $downloadURL = $null
-        do {
-            $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
-            Write-Host "downloadURLpath: $downloadURLpath"
+# # Set the path to the GitHub repository workspace
+# $GitHubWorkspace = $env:GITHUB_WORKSPACE
 
-            $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
+# # create cicd folder if not exists
+# $cicdPath = Join-Path $GitHubWorkspace "cicd"
+# if (!(Test-Path -PathType Container $cicdPath)) {
+#     mkdir $cicdPath
+# }
 
-            if ($downloadURLresponse) {
-                $currentdir = Get-Location
-                Write-Host "filelocation: $currentdir"
-                $downloadURL = $downloadURLresponse.download_url
+# # Set location to cicd folder
+# Set-Location $cicdPath
 
-                if ($downloadURL -ne $null -and $downloadURL -ne "null") {
-                    # Extract file name from the URL without query parameters
-                    $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
+# $headers = @{ Authorization = "Bearer $accessToken" }
 
-                    # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $currentdir "$fileName.zip"
+# # Initialize an empty string to store all environment summaries
+# $allSummaries_Log = ""
 
-                    # Check if the file already exists, and delete it if it does
-                    if (Test-Path $savePath) {
-                        Remove-Item $savePath -Force
-                        Write-Host "Deleted existing file: $savePath"
-                    }
+# # Initialize an array to store proxy names
+# $manifestName_Success = @()
+# $manifestName_Failure = @()
+# $manifestNameCountIn_Success = 0
+# $manifestNameCountIn_Failed = 0
 
-                    try {
-                        $manifestName_Success += $fileName
-                        # Download the file
-                        Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
+# # Initial API request to get the ID
+# $idPath = "https://www.workato.com/api/packages/export/$manifestId"
 
-                        Write-Host "File downloaded successfully!"
-                    }
-                    catch {
-                        $manifestName_Failure += $fileName
-                        Write-Host "API Request Failed. Error: $_"
-                        Write-Host "Response Content: $_.Exception.Response.Content"
-                    }
-                }
-            } else {
-                Write-Host "API Request Successful but response content is empty."
-            }
+# try {
+#     $idResponse = Invoke-RestMethod -Uri $idPath -Method 'POST' -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60
 
-            # Delay before making the next request (optional)
-            Start-Sleep -Seconds 5
-        } while ($downloadURL -eq $null -or $downloadURL -eq "null")
-    } else {
-        Write-Host "API Request Successful but response content is empty."
-    }
-}
-catch {
-    Write-Host "API Request Failed. Error: $_"
-    Write-Host "Response Content: $_.Exception.Response.Content"
-}
+#     # Check if the response content is not empty
+#     if ($idResponse) {
+#         # Extract the "id" value
+#         $idValue = $idResponse.id
 
-$manifestNameList_Success =  $($manifestName_Success -join ', ')
-$manifestNameList_Failed =  $($manifestName_Failure -join ', ')
+#         # Print the result
+#         Write-Host "ID Value: $idValue"
 
-$manifestNameCountIn_Success = $manifestName_Success.Count
-$manifestNameCountIn_Failed = $manifestName_Failure.Count
+#         # Make subsequent API requests until download_url is not null
+#         $downloadURL = $null
+#         do {
+#             $downloadURLpath = "https://www.workato.com/api/packages/$idValue"
+#             Write-Host "downloadURLpath: $downloadURLpath"
 
-$manifestName_Log_Success = ("manifest Recipe Exported Successfully to GitHub: Count - $manifestNameCountIn_Success, Manifest Names - $manifestNameList_Success`r`n")
-$manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNameCountIn_Failed, Manifest Names - $manifestNameList_Failed`r`n")
+#             $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
 
-$allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
+#             if ($downloadURLresponse) {
+#                 $currentdir = Get-Location
+#                 Write-Host "filelocation: $currentdir"
+#                 $downloadURL = $downloadURLresponse.download_url
 
-cd ..
+#                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
+#                     # Extract file name from the URL without query parameters
+#                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
 
-# Move back to the main branch folder
-Set-Location $GitHubWorkspace
+#                     # Set the path where you want to save the file (inside the cicd folder)
+#                     $savePath = Join-Path $currentdir "$fileName.zip"
 
-# Combine the current directory path with the file name
-$filePath = Join-Path $GitHubWorkspace $summary_file_name
+#                     # Check if the file already exists, and delete it if it does
+#                     if (Test-Path $savePath) {
+#                         Remove-Item $savePath -Force
+#                         Write-Host "Deleted existing file: $savePath"
+#                     }
 
-# Write the combined summaries to the summary file
-$allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+#                     try {
+#                         $manifestName_Success += $fileName
+#                         # Download the file
+#                         Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
+
+#                         Write-Host "File downloaded successfully!"
+#                     }
+#                     catch {
+#                         $manifestName_Failure += $fileName
+#                         Write-Host "API Request Failed. Error: $_"
+#                         Write-Host "Response Content: $_.Exception.Response.Content"
+#                     }
+#                 }
+#             } else {
+#                 Write-Host "API Request Successful but response content is empty."
+#             }
+
+#             # Delay before making the next request (optional)
+#             Start-Sleep -Seconds 5
+#         } while ($downloadURL -eq $null -or $downloadURL -eq "null")
+#     } else {
+#         Write-Host "API Request Successful but response content is empty."
+#     }
+# }
+# catch {
+#     Write-Host "API Request Failed. Error: $_"
+#     Write-Host "Response Content: $_.Exception.Response.Content"
+# }
+
+# $manifestNameList_Success =  $($manifestName_Success -join ', ')
+# $manifestNameList_Failed =  $($manifestName_Failure -join ', ')
+
+# $manifestNameCountIn_Success = $manifestName_Success.Count
+# $manifestNameCountIn_Failed = $manifestName_Failure.Count
+
+# $manifestName_Log_Success = ("manifest Recipe Exported Successfully to GitHub: Count - $manifestNameCountIn_Success, Manifest Names - $manifestNameList_Success`r`n")
+# $manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNameCountIn_Failed, Manifest Names - $manifestNameList_Failed`r`n")
+
+# $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
+
+# cd ..
+
+# # Move back to the main branch folder
+# Set-Location $GitHubWorkspace
+
+# # Combine the current directory path with the file name
+# $filePath = Join-Path $GitHubWorkspace $summary_file_name
+
+# # Write the combined summaries to the summary file
+# $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
 
 
 
