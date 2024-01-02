@@ -5,22 +5,17 @@ Param (
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
-# Set the absolute path to the GitHub repository workspace
-$GitHubWorkspace = "/home/runner/work/workato-cicd/"  # Replace with the actual path
-
-$CurrentBranch = git rev-parse --abbrev-ref HEAD
-Write-Host "Current branch is: $CurrentBranch"
-
 $headers = @{ Authorization = "Bearer $accessToken" }
 
 # create cicd folder if not exists
-$cicdPath = Join-Path $GitHubWorkspace "cicd"
-if (!(Test-Path -PathType Container $cicdPath)) {
-    # Explicitly create the directory with the full path
-    New-Item -ItemType Directory -Path $cicdPath | Out-Null
-    Write-Host "Created cicd folder: $cicdPath"
+$cicdPath = "cicd"
+if (!(Test-Path -PathType Container cicd)) {
+    mkdir "cicd"
+    cd cicd
+    Write-Host "Inside if: Created and moved to $cicdPath"
 } else {
-    Write-Host "cicd folder already exists: $cicdPath"
+    cd cicd
+    Write-Host "Inside else: Moved to $cicdPath"
 }
 
 # Initialize an empty string to store all environment summaries
@@ -55,6 +50,7 @@ try {
             $downloadURLresponse = Invoke-RestMethod $downloadURLpath -Method 'GET' -Headers $headers
 
             if ($downloadURLresponse) {
+                $currentdir = Get-Location
                 $downloadURL = $downloadURLresponse.download_url
 
                 if ($downloadURL -ne $null -and $downloadURL -ne "null") {
@@ -62,7 +58,7 @@ try {
                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
 
                     # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path $cicdPath "$fileName.zip"
+                    $savePath = Join-Path $currentdir "$fileName.zip"
 
                     # Check if the file already exists, and delete it if it does
                     if (Test-Path $savePath) {
@@ -75,7 +71,7 @@ try {
                         # Download the file
                         Invoke-WebRequest -Uri $downloadURL -OutFile $savePath
 
-                        Write-Host "File downloaded successfully to: $savePath"
+                        Write-Host "File downloaded successfully!"
                     }
                     catch {
                         $manifestName_Failure += $fileName
@@ -110,11 +106,17 @@ $manifestName_Log_Failed = ("manifest Recipe Export Failed: Count - $manifestNam
 
 $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
 
+cd ..
+
+$currentdir = Get-Location
+Write-Host "currentdir:$currentdir"
+
 # Combine the current directory path with the file name
-$filePath = Join-Path $GitHubWorkspace $summary_file_name
+$filePath = Join-Path $currentdir $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+
 
 
 
