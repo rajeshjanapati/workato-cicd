@@ -5,31 +5,18 @@ Param (
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
-# Assume you are already in the repository directory after checkout
-# If not, navigate to the repository directory first
-
-# Name of the folder you want to create
-$folderName = "your_folder_name"
+# Specify the path where you want to create the folder
+$path = "cicd"  # Replace with your desired path
 
 # Create the folder
-New-Item -Path $folderName -ItemType Directory
+New-Item -Path $path -ItemType Directory
 
-# Optionally, you can navigate into the folder
-Set-Location -Path $folderName
-
-# Content of the text file
-$textContent = @"
-This is the content of your text file.
-You can add multiple lines here.
-"@
-
-# Save the text file
-$textContent | Out-File -FilePath "example.txt" -Encoding UTF8
-
-# Optionally, you can navigate back to the repository root
-Set-Location -Path ..
-
-
+# Check if the folder was created successfully
+If (Test-Path $path) {
+    Write-Host "Folder created successfully at $path"
+} Else {
+    Write-Host "Failed to create folder. Please check permissions and path."
+}
 
 
 
