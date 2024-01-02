@@ -17,8 +17,19 @@ This is the content of your text file.
 You can add multiple lines here.
 "@
 
+cd scripts
+# create cicd folder if not exists
+$cicdPath = "cicd"
+if (!(Test-Path -PathType Container $cicdPath)) {
+    mkdir $cicdPath
+    cd $cicdPath
+}
+else {
+    cd $cicdPath
+}
+
 # Save the text file
-$textContent | Out-File -FilePath "scripts/$folderName/example.txt" -Encoding UTF8
+$textContent | Out-File -FilePath "scripts/$cicdPath/example.txt" -Encoding UTF8
 
 
 
