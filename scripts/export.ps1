@@ -4,7 +4,7 @@ Param (
     [Parameter(mandatory = $true)][string]$manifestId,
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
-
+$headers = @{ Authorization = "Bearer $accessToken" }
 # Set the path to the GitHub repository workspace
 $GitHubWorkspace = $env:GITHUB_WORKSPACE
 
