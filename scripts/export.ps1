@@ -60,7 +60,7 @@ foreach ($file in $fileList) {
 }
 
 # Save the text file
-$textContent | Out-File -FilePath "scripts/$cicdPath/example.txt" -Encoding UTF8
+$textContent | Out-File -FilePath "$currentDirectory1/example.txt" -Encoding UTF8
 
 
 
