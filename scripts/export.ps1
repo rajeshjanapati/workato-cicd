@@ -4,11 +4,11 @@ Param (
     [Parameter(mandatory = $true)][string]$manifestId,
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
-$headers = @{ Authorization = "Bearer $accessToken" }
+
 # Set the path to the GitHub repository workspace
 $GitHubWorkspace = $env:GITHUB_WORKSPACE
 
-# create cicd folder if not exists in the main branch
+# create cicd folder if not exists
 $cicdPath = Join-Path $GitHubWorkspace "cicd"
 if (!(Test-Path -PathType Container $cicdPath)) {
     mkdir $cicdPath
@@ -16,6 +16,8 @@ if (!(Test-Path -PathType Container $cicdPath)) {
 
 # Set location to cicd folder
 Set-Location $cicdPath
+
+$headers = @{ Authorization = "Bearer $accessToken" }
 
 # Initialize an empty string to store all environment summaries
 $allSummaries_Log = ""
