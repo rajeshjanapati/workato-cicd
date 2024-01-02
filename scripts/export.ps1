@@ -62,7 +62,7 @@ try {
                     $fileName = [System.IO.Path]::GetFileNameWithoutExtension($downloadURL)
 
                     # Set the path where you want to save the file (inside the cicd folder)
-                    $savePath = Join-Path (Join-Path $GitHubWorkspace "cicd") "$fileName.zip"
+                    $savePath = Join-Path $cicdPath "$fileName.zip"
 
                     # Check if the file already exists, and delete it if it does
                     if (Test-Path $savePath) {
@@ -117,6 +117,7 @@ $filePath = Join-Path $GitHubWorkspace $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
+
 
 
 
