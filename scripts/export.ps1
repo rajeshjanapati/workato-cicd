@@ -1,22 +1,21 @@
 # Input parameters
 Param (
-    [Parameter(mandatory = $true)][string]$accessToken, # To receive Workato token
-    [Parameter(mandatory = $true)][string]$manifestId, # To receive manifest_ID    
+    [Parameter(mandatory = $true)][string]$accessToken,
+    [Parameter(mandatory = $true)][string]$manifestId,
     [Parameter(mandatory = $true)][string]$summary_file_name
 )
 
-$headers = @{ Authorization = "Bearer $accessToken" }
+# Set the path to the GitHub repository workspace
+$GitHubWorkspace = $env:GITHUB_WORKSPACE
 
-# create cicd folder if not exists
-$cicdPath = "cicd"
-if (!(Test-Path -PathType Container cicd)) {
-    mkdir "cicd"
-    cd cicd
-    Write-Host "Inside if: Created and moved to $cicdPath"
-} else {
-    cd cicd
-    Write-Host "Inside else: Moved to $cicdPath"
+# create cicd folder if not exists in the main branch
+$cicdPath = Join-Path $GitHubWorkspace "cicd"
+if (!(Test-Path -PathType Container $cicdPath)) {
+    mkdir $cicdPath
 }
+
+# Set location to cicd folder
+Set-Location $cicdPath
 
 # Initialize an empty string to store all environment summaries
 $allSummaries_Log = ""
@@ -109,11 +108,11 @@ $allSummaries_Log += $manifestName_Log_Success + $manifestName_Log_Failed
 
 cd ..
 
-$currentdir = Get-Location
-Write-Host "currentdir:$currentdir"
+# Move back to the main branch folder
+Set-Location $GitHubWorkspace
 
 # Combine the current directory path with the file name
-$filePath = Join-Path $currentdir $summary_file_name
+$filePath = Join-Path $GitHubWorkspace $summary_file_name
 
 # Write the combined summaries to the summary file
 $allSummaries_Log | Out-File -FilePath $filePath -Append -Encoding UTF8
