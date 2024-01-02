@@ -18,7 +18,7 @@ You can add multiple lines here.
 "@
 
 # Save the text file
-$textContent | Out-File -FilePath "$folderName/example.txt" -Encoding UTF8
+$textContent | Out-File -FilePath "scripts/$folderName/example.txt" -Encoding UTF8
 
 
 
